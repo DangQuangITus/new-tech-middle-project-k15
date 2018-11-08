@@ -3,17 +3,15 @@
 {{!-- <h3>Xây Dựng Hệ Thống Đặt xe máy qua thông tin khách hàng nhập vào</h3> --}}
 
 <div class="row">
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
-    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-
-
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">Nhập thông tin vị trí: </h3>
             </div>
             <div class="panel-body">
-                <form onsubmit="onSubmit()">
-                    <div class=" form-inline">
+                <form id="formInfo">
+                    <div class="">
                         <div class="form-group ">
                             <label for="username">Ho Ten: &#160;</label>
                             <input onkeypress="onKeypress()" type="text" class="form-control" id="username" placeholder="Ho Ten">
@@ -33,48 +31,16 @@
                     </div>
                     <div class="form-group">
                         <label for="note">Ghi chu: &#160;</label>
-                        <textarea onkeypress="onKeypress()" class="form-control" cols="4" rows="3" id="note"
+                        <textarea onkeypress="onKeypress()" class="form-control" cols="4" rows="2" id="note"
                             placeholder="ghi chu."></textarea>
                     </div>
                     <button type="submit" class="btn btn-default">Submit</button>
                 </form>
             </div>
         </div>
-
-        <div id="googlemapapi">
-
+    </div> &#160;
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        <div id="google-map-api" style="width: 600px; height: 500px; background: grey" class="text-center">
         </div>
-
     </div>
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2"></div>
 </div>
-
-<script type="text/javascript">
-    onSubmit = () => {
-        var info = {
-            name: $('#username').val(),
-            sdt: $('#phonenumber').val(),
-            address: $('#address').val(),
-            note: $('#note').val()
-        }
-        console.log(info);
-    }
-    onKeypress = () => {
-        var info = {
-            name: $('#username').val(),
-            sdt: $('#phonenumber').val(),
-            address: $('#address').val(),
-            note: $('#note').val()
-        }
-        console.log(info);
-    }
-    onChange = () => {
-        var info = {
-            name: $('#username').val(),
-            sdt: $('#phonenumber').val(),
-            address: $('#address').val(),
-            note: $('#note').val()
-        }
-        console.log(info);
-    }
-</script>
