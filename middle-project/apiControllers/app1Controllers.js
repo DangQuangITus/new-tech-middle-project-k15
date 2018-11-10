@@ -20,9 +20,16 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/useraddress", (req, res) => {
-  res.json({
-    searchtext: "144 âu cơ, tân bình, thành phố hồ chí minh"
+router.get("/useraddress/:id", (req, res) => {
+  console.log("req la: ", req.params);
+  var id = req.params.id;
+
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    var address = c.address;
+    res.json({
+      searchtext: address
+    });
   });
 });
 
