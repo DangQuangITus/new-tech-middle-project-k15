@@ -96,10 +96,6 @@ function geocodemap(searchtext) {
     // ... etc.
   }
 
-  /**
-   * This function will be called if a communication error occurs during the JSON-P request
-   * @param  {Object} error  The error message received.
-   */
   function onError(error) {
     alert("Ooops!");
   }
@@ -215,77 +211,6 @@ function geocodemap(searchtext) {
       marker = new H.map.Marker(position);
       marker.label = locations[i].location.address.label;
       group.addObject(marker);
-      //--------------------- add -----------------------
-      // disable the default draggability of the underlying map
-      // when starting to drag a marker object:
-      map.addEventListener(
-        "dragstart",
-        function(ev) {
-          var target = ev.target;
-          if (target instanceof H.map.Marker) {
-            behavior.disable();
-          }
-        },
-        false
-      );
-
-      // re-enable the default draggability of the underlying map
-      // when dragging has completed
-      map.addEventListener(
-        "dragend",
-        function(ev) {
-          var target = ev.target;
-          var pointer = ev.currentPointer; // add new
-          alert("x = " + pointer.viewportX + " , y= " + pointer.viewportY);
-          var prox = pointer.viewportX + "," + pointer.viewportY;
-          // $.ajax({
-          //   url:
-          //     "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json",
-          //   type: "GET",
-          //   dataType: "jsonp",
-          //   jsonp: "jsoncallback",
-          //   data: {
-          //     prox: prox,
-          //     mode: "retrieveAddresses",
-          //     maxresults: "1",
-          //     gen: "9",
-          //     app_id: "GLRtC20EEJTogzIdSorb",
-          //     app_code: "XqqRsWMKcjKYbnhu0ZT_wA"
-          //   },
-          //   success: function(data) {
-          //     //alert(JSON.stringify(data));
-          //     var address = JSON.stringify(data);
-          //     alert(address);
-          //     console.log(data);
-          //     // var locations = address.response.view[0].result;
-          //   }
-          // });
-          if (target instanceof mapsjs.map.Marker) {
-            behavior.enable();
-          }
-        },
-        false
-      );
-
-      // Listen to the drag event and move the position of the marker
-      // as necessary
-      map.addEventListener(
-        "drag",
-        function(ev) {
-          var target = ev.target,
-            pointer = ev.currentPointer;
-          if (target instanceof mapsjs.map.Marker) {
-            target.setPosition(
-              map.screenToGeo(pointer.viewportX, pointer.viewportY)
-            );
-          }
-        },
-        false
-      );
-
-      //--------------------- end -----------------------
-
-      //end new
     }
 
     group.addEventListener(

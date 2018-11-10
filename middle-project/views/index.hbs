@@ -48,3 +48,43 @@
 
     </div>
 </div>
+
+<div class="row">
+
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>name</th>
+                <th>address</th>
+                <th>phone</th>
+                <th>notes</th>
+                <th>status</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.name}}</td>
+                <td>{{this.address}}</td>
+                <td>{{this.phone}}</td>
+                <td>{{this.notes}}</td>
+                <td>{{this.status}}</td>
+                <td>
+                    <button id="getmapid" value={{this.id}} type="button" class="btn btn-default">get map</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+</div>
+
+<script type="text/javascript">
+
+    document.getElementById("getmapid").addEventListener('click', function () {
+        console.log($(this).val());
+    })
+</script>

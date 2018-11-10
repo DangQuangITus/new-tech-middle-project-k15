@@ -1,0 +1,14 @@
+driver 
+    link: /login -> login for driver() ->
+    -> driver.hbs {
+    insert driver 
+    create table (id, name, current address, phone, status)
+    update status()
+    update current address()
+    logout()
+    }
+
+admin
+    table admin infor(id, name, phone)
+    linK : /admin/login -> login for admin()
+    -> index.hbs
