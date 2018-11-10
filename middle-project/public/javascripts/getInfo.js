@@ -4,11 +4,17 @@ $(document).ready(function() {
   document.querySelector("#formInfo").addEventListener(
     "submit",
     function(event) {
+      var d = new Date().getDate();
+      var y = new Date().getFullYear();
+      var m = new Date().getMonth();
+      console.log(y + "-" + (m + 1) + "-" + d);
       var info = {
         name: $("#username").val(),
         sdt: $("#phonenumber").val(),
         address: $("#address").val(),
-        note: $("#note").val()
+        note: $("#note").val(),
+        status: "not located",
+        createddate: y + "-" + (m + 1) + "-" + d
       };
       console.log(JSON.stringify(info));
       // var link = "http://localhost:3000/apicaller";
@@ -51,26 +57,6 @@ $(document).ready(function() {
     };
     //console.log(info);
   };
-
-  $("#getaddressdemo").click(function() {
-    $.ajax({
-      type: "GET",
-      contentType: "application/json",
-      url: "http://localhost:3000/apicaller/useraddress",
-      // cache: false,
-      timeout: 10000,
-      success: function(json) {
-        console.log(json.searchtext);
-        $("#google-map-api").empty();
-        $("#panel").empty();
-        geocodemap(json.searchtext);
-        $("#google-map-api").load();
-      },
-      error: function(data) {
-        alert("error");
-      }
-    });
-  });
 });
 
 function geocodemap(searchtext) {

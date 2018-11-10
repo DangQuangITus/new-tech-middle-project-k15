@@ -34,10 +34,10 @@ exports.single = id => {
   });
 };
 
-exports.add = (name, address, sdt, note) => {
-  var status = "not locate";
+exports.add = (name, address, sdt, note, status, createddate) => {
+  // var status = "not locate";
   var query =
-    "INSERT INTO customer (`id`, `name`, `address`, `phone`, `notes`,`status`) VALUES (NULL, '" +
+    "INSERT INTO customer (`id`, `name`, `address`, `phone`, `notes`,`status`,`reversegeocoding`, `createddate`) VALUES (NULL, '" +
     name +
     "', '" +
     address +
@@ -47,6 +47,8 @@ exports.add = (name, address, sdt, note) => {
     note +
     "', '" +
     status +
+    "', NULL, '" +
+    createddate +
     "');";
   return db.save(query);
 };

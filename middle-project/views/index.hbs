@@ -62,6 +62,7 @@
                 <th>phone</th>
                 <th>notes</th>
                 <th>status</th>
+                <th>created date</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -74,6 +75,7 @@
                 <td>{{this.phone}}</td>
                 <td>{{this.notes}}</td>
                 <td>{{this.status}}</td>
+                <td>{{this.createddate}}</td>
                 <td>
                     <button value={{this.id}} type="button" class="btn
                         btn-default getdemo">get
@@ -87,8 +89,6 @@
 </div>
 
 <script type="text/javascript">
-
-
     $(document).ready(function () {
         $("button.getdemo").on('click', function (event) {
             var id = event.target.value;

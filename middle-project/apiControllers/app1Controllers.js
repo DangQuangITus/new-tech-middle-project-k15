@@ -36,9 +36,16 @@ router.get("/useraddress/:id", (req, res) => {
 router.post("/", (req, res) => {
   // var dataReic = JSON.parse(req.body);
   var dataReic = req.body;
-  console.log("get post o day", dataReic.name);
+  // console.log("get post o day", dataReic.name);
   customerRepo
-    .add(dataReic.name, dataReic.address, dataReic.sdt, dataReic.note)
+    .add(
+      dataReic.name,
+      dataReic.address,
+      dataReic.sdt,
+      dataReic.note,
+      dataReic.status,
+      dataReic.createddate
+    )
     .then(value => {
       res.statusCode = 201;
       res.json({
