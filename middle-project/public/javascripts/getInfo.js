@@ -61,6 +61,8 @@ $(document).ready(function() {
       timeout: 10000,
       success: function(json) {
         console.log(json.searchtext);
+        $("#google-map-api").empty();
+        $("#panel").empty();
         geocodemap(json.searchtext);
         $("#google-map-api").load();
       },
@@ -72,8 +74,8 @@ $(document).ready(function() {
 });
 
 function geocodemap(searchtext) {
-  //   var searchtext = "71 trần bình trọng, thành phố hồ chí minh";
   console.log("vo ham geo code map");
+
   function geocode(platform) {
     var geocoder = platform.getGeocodingService(),
       geocodingParameters = {
@@ -86,11 +88,6 @@ function geocodemap(searchtext) {
 
   function onSuccess(result) {
     var locations = result.response.view[0].result;
-    /*
-     * The styling of the geocoding response on the map is entirely under the developer's control.
-     * A representitive styling can be found the full JS + HTML code of this example
-     * in the functions below:
-     */
     addLocationsToMap(locations);
     addLocationsToPanel(locations);
     // ... etc.
@@ -151,6 +148,7 @@ function geocodemap(searchtext) {
       bubble.open();
     }
   }
+
   function addLocationsToPanel(locations) {
     var nodeOL = document.createElement("ul"),
       i;
@@ -211,22 +209,111 @@ function geocodemap(searchtext) {
       marker = new H.map.Marker(position);
       marker.label = locations[i].location.address.label;
       group.addObject(marker);
-    }
+      //--------------------- add -----------------------
+      marker.draggable = true;
 
-    group.addEventListener(
-      "tap",
-      function(evt) {
-        map.setCenter(evt.target.getPosition());
-        openBubble(evt.target.getPosition(), evt.target.label);
-      },
-      false
-    );
+      //--------------------- end -----------------------
+    }
 
     // Add the locations group to the map
     map.addObject(group);
     map.setCenter(group.getBounds().getCenter());
   }
 
+  map.addEventListener(
+    "dragstart",
+    function(ev) {
+      var target = ev.target;
+      var pointer = ev.currentPointer;
+      console.log("start pointer: ", pointer);
+      if (target instanceof H.map.Marker) {
+        behavior.disable();
+      }
+    },
+    false
+  );
+
+  // re-enable the default draggability of the underlying map
+  // when dragging has completed
+  map.addEventListener(
+    "dragend",
+    function(event) {
+      $("#labelgetclick").show();
+
+      var coord = map.screenToGeo(
+        event.currentPointer.viewportX,
+        event.currentPointer.viewportY
+      );
+
+      // alert(coord.lat + "  " + coord.lng);
+      var target = event.target;
+      console.log("target: ", target);
+      $.ajax({
+        url: "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json",
+        type: "GET",
+        dataType: "jsonp",
+        jsonp: "jsoncallback",
+        data: {
+          prox: coord.lat + "," + coord.lng,
+          mode: "retrieveAddresses",
+          maxresults: "1",
+          gen: "9",
+          app_id: "XWlu7av4mIl9LiVOkizU",
+          app_code: "SWPg1es3nHq226fb1B6DMQ"
+        },
+        success: function(data) {
+          var address = JSON.stringify(data);
+          console.log("address: ", address);
+          var currentAddress = data.Response.View[0].Result[0].Location.Address;
+          var nowPosition =
+            data.Response.View[0].Result[0].Location.Address.Label;
+
+          alert("now position: " + nowPosition);
+          console.log("data: ", currentAddress);
+          // var locations = address.response.view[0].result;
+        }
+      });
+
+      //end new
+      if (target instanceof mapsjs.map.Marker) {
+        behavior.enable();
+      }
+    },
+    false
+  );
+
+  // Listen to the drag event and move the position of the marker
+  // as necessary
+  map.addEventListener(
+    "drag",
+    function(ev) {
+      var target = ev.target,
+        pointer = ev.currentPointer;
+      if (target instanceof mapsjs.map.Marker) {
+        target.setPosition(
+          map.screenToGeo(pointer.viewportX, pointer.viewportY)
+        );
+      }
+    }
+    // false
+  );
+
+  map.addEventListener("tap", function(evt) {
+    var coord = map.screenToGeo(
+      evt.currentPointer.viewportX,
+      evt.currentPointer.viewportY
+    );
+    alert(
+      "Clicked at " +
+        Math.abs(coord.lat) +
+        (coord.lat > 0 ? "N" : "S") +
+        " " +
+        Math.abs(coord.lng) +
+        (coord.lng > 0 ? "E" : "W")
+    );
+  });
+
   // Now use the map as required...
+  // setUpClickListener(map);
   geocode(platform);
 }

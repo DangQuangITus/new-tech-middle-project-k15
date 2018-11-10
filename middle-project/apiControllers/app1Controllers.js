@@ -21,18 +21,6 @@ router.get("/", (req, res) => {
 });
 
 router.get("/useraddress", (req, res) => {
-  // customerRepo
-  //   .loadAll()
-  //   .then(rows => {
-  //     console.log(rows);
-  //     res.render("getCustomer", { data: rows });
-  //     return rows;
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //     res.statusCode = 500;
-  //     res.end("View error log on console");
-  //   });
   res.json({
     searchtext: "144 âu cơ, tân bình, thành phố hồ chí minh"
   });
