@@ -298,22 +298,6 @@ function geocodemap(searchtext) {
     // false
   );
 
-  map.addEventListener("tap", function(evt) {
-    var coord = map.screenToGeo(
-      evt.currentPointer.viewportX,
-      evt.currentPointer.viewportY
-    );
-    alert(
-      "Clicked at " +
-        Math.abs(coord.lat) +
-        (coord.lat > 0 ? "N" : "S") +
-        " " +
-        Math.abs(coord.lng) +
-        (coord.lng > 0 ? "E" : "W")
-    );
-  });
-
   // Now use the map as required...
-  // setUpClickListener(map);
   geocode(platform);
 }
