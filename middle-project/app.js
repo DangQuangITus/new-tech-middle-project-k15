@@ -10,6 +10,7 @@ var expressHbs = require("express-handlebars");
 var app = express();
 
 var apiController = require("./apiControllers/app1Controllers");
+var driverController = require("./apiControllers/driverControllers");
 
 // view engine setup
 app.engine(".hbs", expressHbs({ defaultLayout: "layout", extname: ".hbs" }));
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/driver", driverController);
 app.use("/apicaller", apiController);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
