@@ -26,6 +26,12 @@ router.get("/useraddress/:id", (req, res) => {
 
   customerRepo.single(id).then(c => {
     //console.log(c);
+    var status = 'located';
+    customerRepo.updateStatus(status, c.id).then(value => {
+      console.log("update status located");
+    }).catch(err => {
+      res.end('fail');
+    });
     var address = c.address;
     res.json({
       searchtext: address

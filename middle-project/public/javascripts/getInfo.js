@@ -1,9 +1,11 @@
 // var geocodemap = import("./geocode.js");
-$(document).ready(function() {
+$(document).ready(function () {
+  $('body').bootstrapMaterialDesign();
+  $('[data-toggle="tooltip"], [rel="tooltip"]').tooltip();
   // action form input infor
   document.querySelector("#formInfo").addEventListener(
     "submit",
-    function(event) {
+    function (event) {
       var d = new Date().getDate();
       var y = new Date().getFullYear();
       var m = new Date().getMonth();
@@ -26,10 +28,10 @@ $(document).ready(function() {
         url: "http://localhost:3000/apicaller",
         // cache: false,
         timeout: 10000,
-        success: function(data) {
+        success: function (data) {
           console.log(data);
         },
-        error: function(data) {
+        error: function (data) {
           alert("error");
         }
       });
@@ -57,7 +59,33 @@ $(document).ready(function() {
     };
     //console.log(info);
   };
+
+   $(".getdemo").on('click', function (event) {
+                    var id = event.target.value;
+
+                    $.ajax({
+                    type: "GET",
+                    contentType: "application/json",
+                    url: "http://localhost:3000/apicaller/useraddress/" + id,
+                    // cache: false,
+                    timeout: 10000,
+                    success: function (json) {
+                        console.log(json.searchtext);
+                        $("#google-map-api").empty();
+                        $("#panel").empty();
+                        geocodemap(json.searchtext);
+                        $("#google-map-api").load();
+                    },
+                    error: function (data) {
+                        alert("error");
+                    }
+                    });
+                    //  console.log(event.target.value);
+                })
+  
 });
+
+///=============================================================================
 
 function geocodemap(searchtext) {
   console.log("vo ham geo code map");
@@ -148,29 +176,28 @@ function geocodemap(searchtext) {
         divLabel = document.createElement("div"),
         address = locations[i].location.address,
         content =
-          '<strong style="font-size: large;">' +
           address.label +
-          "</strong></br>";
+          "</br>";
       position = {
         lat: locations[i].location.displayPosition.latitude,
         lng: locations[i].location.displayPosition.longitude
       };
 
-      content +=
-        "<strong>houseNumber:</strong> " + address.houseNumber + "<br/>";
-      content += "<strong>street:</strong> " + address.street + "<br/>";
-      content += "<strong>district:</strong> " + address.district + "<br/>";
-      content += "<strong>city:</strong> " + address.city + "<br/>";
-      content += "<strong>postalCode:</strong> " + address.postalCode + "<br/>";
-      content += "<strong>county:</strong> " + address.county + "<br/>";
-      content += "<strong>country:</strong> " + address.country + "<br/>";
-      content +=
-        "<br/><strong>position:</strong> " +
-        Math.abs(position.lat.toFixed(4)) +
-        (position.lat > 0 ? "N" : "S") +
-        " " +
-        Math.abs(position.lng.toFixed(4)) +
-        (position.lng > 0 ? "E" : "W");
+      // content +=
+      //   "<strong>houseNumber:</strong> " + address.houseNumber + "<br/>";
+      // content += "<strong>street:</strong> " + address.street + "<br/>";
+      // content += "<strong>district:</strong> " + address.district + "<br/>";
+      // content += "<strong>city:</strong> " + address.city + "<br/>";
+      // content += "<strong>postalCode:</strong> " + address.postalCode + "<br/>";
+      // content += "<strong>county:</strong> " + address.county + "<br/>";
+      // content += "<strong>country:</strong> " + address.country + "<br/>";
+      // content +=
+      //   "<br/><strong>position:</strong> " +
+      //   Math.abs(position.lat.toFixed(4)) +
+      //   (position.lat > 0 ? "N" : "S") +
+      //   " " +
+      //   Math.abs(position.lng.toFixed(4)) +
+      //   (position.lng > 0 ? "E" : "W");
 
       divLabel.innerHTML = content;
       li.appendChild(divLabel);
@@ -208,7 +235,7 @@ function geocodemap(searchtext) {
 
   map.addEventListener(
     "dragstart",
-    function(ev) {
+    function (ev) {
       var target = ev.target;
       var pointer = ev.currentPointer;
       console.log("start pointer: ", pointer);
@@ -223,7 +250,7 @@ function geocodemap(searchtext) {
   // when dragging has completed
   map.addEventListener(
     "dragend",
-    function(event) {
+    function (event) {
       $("#labelgetclick").show();
 
       var coord = map.screenToGeo(
@@ -247,7 +274,7 @@ function geocodemap(searchtext) {
           app_id: "XWlu7av4mIl9LiVOkizU",
           app_code: "SWPg1es3nHq226fb1B6DMQ"
         },
-        success: function(data) {
+        success: function (data) {
           var address = JSON.stringify(data);
           console.log("address: ", address);
           var currentAddress = data.Response.View[0].Result[0].Location.Address;
@@ -272,7 +299,7 @@ function geocodemap(searchtext) {
   // as necessary
   map.addEventListener(
     "drag",
-    function(ev) {
+    function (ev) {
       var target = ev.target,
         pointer = ev.currentPointer;
       if (target instanceof mapsjs.map.Marker) {
