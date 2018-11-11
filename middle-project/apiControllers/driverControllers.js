@@ -8,30 +8,18 @@ var app = express();
 app.use(bodyParser.json());
 
 router.get("/", (req, res) => {
-  driverRepo
-  .loadAll()
-  .then(rows => {
-    console.log(rows);
-    // res.render("getCustomer", { data: rows });
-    return rows;
-  })
-  .catch(err => {
-    console.log(err);
-    res.statusCode = 500;
-    res.end("View error log on console");
+  res.render("driverindex", {
+    title: "Driver Index",
   });
 });
 
-router.post("/", (req, res) => {
-  console.log(req.body);
+router.post("/register", (req, res) => {
   data = req.body;
   
   driverRepo.add(data)
   .then(value => {
     res.statusCode = 201;
-    res.json({
-      msg: "driver added"
-    });
+    res.redirect('/driver');
   })
   .catch(err => {
     console.log(err);
@@ -40,10 +28,90 @@ router.post("/", (req, res) => {
   });
 });
 
-router.get("/login", function (req, res, next) {
-  res.render("driverlogin", {
-    title: "Đồ án giữa kỳ",
+router.get("/register", function (req, res, next) {
+  res.render("driverregister", {
+    title: "Driver register form",
   });
+});
+
+router.get('/login', (req, res) => {
+  console.log('login!');
+  res.render("driverlogin", {
+    title: "Driver register form",
+  });
+  
+  // userRepo.login(req.body)
+  // 	.then(rows => {
+  // 		if (rows.length > 0) {
+  // 			var userEntity = rows[0];
+  // 			var acToken = authRepo.generateAccessToken(userEntity);
+  // 			var rfToken = authRepo.generateRefreshToken();
+  //
+  // 			authRepo.updateRefreshToken(userEntity.f_ID, rfToken)
+  // 				.then(value => {
+  // 					res.json({
+  // 						auth: true,
+  // 						user: userEntity,
+  // 						access_token: acToken,
+  // 						refresh_token: rfToken
+  // 					})
+  // 				})
+  // 				.catch(err => {
+  // 					console.log(err);
+  // 					res.statusCode = 500;
+  // 					res.end('View error log on console');
+  // 				})
+  // 		} else {
+  // 			res.json({
+  // 				auth: false
+  // 			})
+  // 		}
+  // 	})
+  // 	.catch(err => {
+  // 		console.log(err);
+  // 		res.statusCode = 500;
+  // 		res.end('View error log on console');
+  // 	})
+  
+});
+
+router.post('/login', (req, res) => {
+  console.log('login!');
+  res.redirect('/driver');
+  //
+  // userRepo.login(req.body)
+  // .then(rows => {
+  //   if (rows.length > 0) {
+  //     var userEntity = rows[0];
+  //     var acToken = authRepo.generateAccessToken(userEntity);
+  //     var rfToken = authRepo.generateRefreshToken();
+  //
+  //     authRepo.updateRefreshToken(userEntity.f_ID, rfToken)
+  //     .then(value => {
+  //       res.json({
+  //         auth: true,
+  //         user: userEntity,
+  //         access_token: acToken,
+  //         refresh_token: rfToken
+  //       })
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //       res.statusCode = 500;
+  //       res.end('View error log on console');
+  //     })
+  //   } else {
+  //     res.json({
+  //       auth: false
+  //     })
+  //   }
+  // })
+  // .catch(err => {
+  //   console.log(err);
+  //   res.statusCode = 500;
+  //   res.end('View error log on console');
+  // })
+  
 });
 
 module.exports = router;
