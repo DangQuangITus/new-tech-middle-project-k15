@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
   customerRepo
     .loadAll()
     .then(rows => {
-      console.log(rows);
+      //console.log(rows);
       res.render("getCustomer", { data: rows });
       return rows;
     })
@@ -35,6 +35,41 @@ router.get("/useraddress/:id", (req, res) => {
     var address = c.address;
     res.json({
       searchtext: address
+    });
+  });
+});
+
+router.get("/useraddress/:id", (req, res) => {
+  console.log("req la: ", req.params);
+  var id = req.params.id;
+
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    var status = 'located';
+    customerRepo.updateStatus(status, c.id).then(value => {
+      console.log("update status located");
+      var address = c.address;
+      res.json({
+        searchtext: address
+      });
+    }).catch(err => {
+      res.end('fail');
+    });
+  });
+});
+
+router.get("/updateaddress", (req, res) => {
+  var id = req.query.id;
+  var address = req.query.address;
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    customerRepo.updateAddressNew(address, c.id).then(value => {
+      console.log("update address successfully");
+      res.json({
+        newaddress: address
+      });
+    }).catch(err => {
+      res.end('fail');
     });
   });
 });

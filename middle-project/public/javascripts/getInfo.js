@@ -60,34 +60,34 @@ $(document).ready(function () {
     //console.log(info);
   };
 
-   $(".getdemo").on('click', function (event) {
-                    var id = event.target.value;
+  $(".getdemo").on('click', function (event) {
+    var id = event.target.value;
 
-                    $.ajax({
-                    type: "GET",
-                    contentType: "application/json",
-                    url: "http://localhost:3000/apicaller/useraddress/" + id,
-                    // cache: false,
-                    timeout: 10000,
-                    success: function (json) {
-                        console.log(json.searchtext);
-                        $("#google-map-api").empty();
-                        $("#panel").empty();
-                        geocodemap(json.searchtext);
-                        $("#google-map-api").load();
-                    },
-                    error: function (data) {
-                        alert("error");
-                    }
-                    });
-                    //  console.log(event.target.value);
-                })
-  
+    $.ajax({
+      type: "GET",
+      contentType: "application/json",
+      url: "http://localhost:3000/apicaller/useraddress/" + id,
+      // cache: false,
+      timeout: 10000,
+      success: function (json) {
+        console.log(json.searchtext);
+        $("#google-map-api").empty();
+        $("#panel").empty();
+        geocodemap(json.searchtext, id);
+        $("#google-map-api").load();
+      },
+      error: function (data) {
+        alert("error");
+      }
+    });
+    //  console.log(event.target.value);
+  })
+
 });
 
 ///=============================================================================
 
-function geocodemap(searchtext) {
+function geocodemap(searchtext, id) {
   console.log("vo ham geo code map");
 
   function geocode(platform) {
@@ -284,6 +284,22 @@ function geocodemap(searchtext) {
           alert("now position: " + nowPosition);
           console.log("data: ", currentAddress);
           // var locations = address.response.view[0].result;
+          var link2 = "http://localhost:3000/apicaller/updateaddress?id=" + id + "&address=" + nowPosition
+          $.ajax({
+            type: "GET",
+            url: link2,
+            cache: false,
+            dataType: 'json',
+            contentType: "application/json",
+            timeout: 10000,
+            success: function (data) {
+              console.log(" - data: ");
+              console.log(data);
+            },
+            error: function (data) {
+              alert('error');
+            }
+          });
         }
       });
 
