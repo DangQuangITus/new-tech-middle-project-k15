@@ -35,7 +35,6 @@ router.get("/register", function (req, res, next) {
 });
 
 router.get('/login', (req, res) => {
-  console.log('login!');
   res.render("driverlogin", {
     title: "Driver register form",
   });
@@ -76,41 +75,21 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log('login!');
-  res.redirect('/driver');
-  //
-  // userRepo.login(req.body)
-  // .then(rows => {
-  //   if (rows.length > 0) {
-  //     var userEntity = rows[0];
-  //     var acToken = authRepo.generateAccessToken(userEntity);
-  //     var rfToken = authRepo.generateRefreshToken();
-  //
-  //     authRepo.updateRefreshToken(userEntity.f_ID, rfToken)
-  //     .then(value => {
-  //       res.json({
-  //         auth: true,
-  //         user: userEntity,
-  //         access_token: acToken,
-  //         refresh_token: rfToken
-  //       })
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       res.statusCode = 500;
-  //       res.end('View error log on console');
-  //     })
-  //   } else {
-  //     res.json({
-  //       auth: false
-  //     })
-  //   }
-  // })
-  // .catch(err => {
-  //   console.log(err);
-  //   res.statusCode = 500;
-  //   res.end('View error log on console');
-  // })
+  driverRepo.login(req.body)
+  .then(rows => {
+    if (rows.length > 0) {
+      res.redirect('/driver');
+    } else {
+      res.render("driverregister", {
+        title: "Driver register form",
+      });
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  })
   
 });
 

@@ -10,9 +10,10 @@ exports.add = (data) => {
 };
 
 exports.login = loginEntity => {
-  var md5_pwd = md5(loginEntity.driver_password);
-  var sql = `select * from driver where username = '${loginEntity.driver_username}' and password = '${md5_pwd}'`;
-  return db.load(sql);
+  var md5_pwd = md5(loginEntity.password);
+  var sql = `select * from driver where username = '${loginEntity.username}' and password = '${md5_pwd}'`;
+  rows = db.load(sql);
+  return rows
 };
 
 console.update_location = (driver_id, driver_location) => {

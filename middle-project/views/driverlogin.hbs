@@ -7,14 +7,14 @@
   <div class="panel-body">
     <form id="driverLoginForm" method="post">
       <div class="">
-        <img class="mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg"
-             alt="" width="72" height="72">
-        <label for="driver_username" class="sr-only">Username</label>
-        <input id="driver_username" name="driver_username" class="form-control" style="margin-bottom: 10px"
-               placeholder="Username" required="" autofocus="">
-        <label for="driver_password" class="sr-only">Password</label>
-        <input id="driver_password" name="driver_password" class="form-control" style="margin-bottom: 10px"
-               placeholder="Password" required="" type="password">
+        <div class="form-group ">
+            <label for="driver_username">Username: &#160;</label>
+            <input type="text" class="form-control" id="driver_username" placeholder="Username">
+          </div>&#160;&#160;
+          <div class="form-group">
+            <label for="driver_password">Password: &#160;</label>
+            <input type="text" class="form-control" id="driver_password" placeholder="Password">
+          </div>
         <br>
         <div>
           <button id="driver_login" class="btn btn-lg btn-primary btn-block">Login</button>
