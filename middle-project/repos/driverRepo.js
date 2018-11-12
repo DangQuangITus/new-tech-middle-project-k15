@@ -14,3 +14,13 @@ exports.login = loginEntity => {
   var sql = `select * from driver where username = '${loginEntity.driver_username}' and password = '${md5_pwd}'`;
   return db.load(sql);
 };
+
+console.update_location = (driver_id, driver_location) => {
+  var sql = `update driver set location = '${driver_location}' where id = '${driver_id}'`;
+  return db.save(sql);
+};
+
+console.update_status = (driver_id, driver_status) => {
+  var sql = `update driver set status = '${driver_status}' where id = '${driver_id}'`;
+  return db.save(sql);
+};
