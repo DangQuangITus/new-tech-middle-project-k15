@@ -15,24 +15,29 @@ $("#driver_register").click(function () {
   }
 });
 
-
-$("#driver_login").click(function () {
-  var body = {
-    username: $("#driver_username").val(),
-    password: $("#driver_password").val(),
-  };
-  $.ajax({
-    type: "POST",
-    dataType: "json",
-    data: body,
-    contentType: "application/json",
-    url: "http://localhost:3000/driver/login",
-    timeout: 10000,
-    success: function (data) {
-      console.log(data);
-    },
-    error: function (data) {
-      alert("error");
-    }
-  });
-});
+// $("#driver_login").click(function () {
+//   var data = {
+//     driver_username: $("#driver_username").val(),
+//     driver_password: $("#driver_password").val(),
+//   };
+//   console.log(JSON.stringify(data));
+//   console.log(data.username);
+//
+//   $.ajax({
+//         type: "POST",
+//         dataType: "json",
+//         data: data,
+//         contentType: "application/json",
+//         url: "http://localhost:3000/driver/login",
+//         cache: false,
+//         timeout: 10000,
+//         success: function(data) {
+//           console.log(data);
+//         },
+//         error: function(data) {
+//           alert(data);
+//         }
+//       });
+//       ///return false;
+//       event.preventDefault();
+// });
