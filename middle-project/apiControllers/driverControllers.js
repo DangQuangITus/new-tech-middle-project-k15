@@ -7,9 +7,29 @@ var app = express();
 
 app.use(bodyParser.json());
 
+var sessionChecker = (req, res, next) => {
+  console.log('=======================', req.cookies.user_sid);
+  if (req.cookies.user_sid) {
+    res.render("driverindex", {
+      title: "Driver Index",
+    });
+  } else {
+    next()
+  }
+};
+
 router.get("/", (req, res) => {
-  res.render("driverindex", {
-    title: "Driver Index",
+  sessionChecker(req, res, () => {
+    res.render("driverlogin", {
+      title: "Driver Login",
+    });
+  })
+});
+
+// Register
+router.get("/register", sessionChecker, function (req, res, next) {
+  res.render("driverregister", {
+    title: "Driver register form",
   });
 });
 
@@ -18,8 +38,9 @@ router.post("/register", (req, res) => {
   
   driverRepo.add(data)
   .then(value => {
+    req.session.user = value;
     res.statusCode = 201;
-    res.redirect('/driver');
+    res.render("driverindex", {})
   })
   .catch(err => {
     console.log(err);
@@ -28,13 +49,8 @@ router.post("/register", (req, res) => {
   });
 });
 
-router.get("/register", function (req, res, next) {
-  res.render("driverregister", {
-    title: "Driver register form",
-  });
-});
-
-router.get('/login', (req, res) => {
+// Login
+router.get('/login', sessionChecker, (req, res) => {
   res.render("driverlogin", {
     title: "Driver register form",
   });
@@ -77,8 +93,9 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res) => {
   driverRepo.login(req.body)
   .then(rows => {
+    console.log('ROWS: ', rows);
     if (rows.length > 0) {
-      res.redirect('/driver');
+      res.render("driverindex", {})
     } else {
       res.render("driverregister", {
         title: "Driver register form",
