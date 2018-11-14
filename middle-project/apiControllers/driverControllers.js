@@ -52,7 +52,6 @@ router.get('/login', sessionChecker, (req, res) => {
 router.post('/login', (req, res) => {
   driverRepo.login(req.body)
   .then(rows => {
-    console.log('ROWS: ', rows);
     if (rows.length > 0) {
       req.session.user = rows[0];
       res.redirect('/driver');
