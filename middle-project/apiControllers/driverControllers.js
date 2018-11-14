@@ -31,9 +31,8 @@ router.get("/register", sessionChecker, function (req, res, next) {
 router.post("/register", (req, res) => {
   driverRepo.add(req.body)
   .then(value => {
-    req.session.user = value;
     res.statusCode = 201;
-    res.redirect('/driver');
+    res.redirect('/driver/login');
   })
   .catch(err => {
     console.log(err);
@@ -53,7 +52,7 @@ router.post('/login', (req, res) => {
   driverRepo.login(req.body)
   .then(rows => {
     if (rows.length > 0) {
-      req.session.user = rows[0];
+      req.session.user = rows[0].id;
       res.redirect('/driver');
     } else {
       res.redirect('/driver/login');
@@ -65,6 +64,31 @@ router.post('/login', (req, res) => {
     res.end('View error log on console');
   })
   
+});
+
+router.post('/location', (req, res) => {
+  console.log(req.session.user);
+  driverRepo.update_location(req.session.user, req.body.location)
+  .then(rows => {
+    res.json({
+      msg: 'Updated location'
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  })
+});
+
+// route for user logout
+app.get('/logout', (req, res) => {
+  if (req.session.user && req.cookies.user_sid) {
+    res.clearCookie('user_sid');
+    res.redirect('/');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 module.exports = router;
