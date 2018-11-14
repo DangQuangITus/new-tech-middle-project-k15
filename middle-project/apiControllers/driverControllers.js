@@ -66,8 +66,25 @@ router.post('/login', (req, res) => {
   
 });
 
+router.get('/location', (req, res) => {
+  driverRepo.get_location(req.session.user)
+  .then(rows => {
+    var coord = {};
+    if (rows.length){
+      coord = rows[0].location
+    }
+    res.json({
+      coord: coord
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  })
+});
+
 router.post('/location', (req, res) => {
-  console.log(req.session.user);
   driverRepo.update_location(req.session.user, req.body.location)
   .then(rows => {
     res.json({

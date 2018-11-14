@@ -12,8 +12,12 @@ exports.add = (data) => {
 exports.login = data => {
   var md5_pwd = md5(data.driver_password);
   var sql = `select * from driver where username = '${data.driver_username}' and password = '${md5_pwd}'`;
-  rows = db.load(sql);
-  return rows
+  return db.load(sql);
+};
+
+exports.get_location = (driver_id) => {
+  var sql = `select * from driver where id = '${driver_id}'`;
+  return db.load(sql);
 };
 
 exports.update_location = (driver_id, driver_location) => {

@@ -16,7 +16,7 @@ $("#driver_register").click(function () {
 });
 
 var map;
-var MAX_DIS = 100;
+var MAX_DIS = 100; // m
 
 function showMap(lat, lng) {
   /**
@@ -39,7 +39,7 @@ function showMap(lat, lng) {
     defaultLayers.normal.map,
     {
       center: {lat: lat, lng: lng},
-      zoom: 15
+      zoom: 20
     }
   );
   
@@ -58,20 +58,20 @@ function showMap(lat, lng) {
     
     //Get the latitude and the longitude;
     function successFunction(position) {
-      coords1 = {
-        lat: evt.currentPointer.viewportX,
-        lng: evt.currentPointer.viewportY
-      };
+      coords1 = map.screenToGeo(evt.currentPointer.viewportX, evt.currentPointer.viewportY);
+      
       coords2 = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
       
-      if (haversineDistance(coords1, coords2) > MAX_DIS) {
+      haversine = haversineDistance(coords1, coords2);
+      if (haversine > MAX_DIS) {
         alert("Haversine distance great than " + MAX_DIS);
         return
       }
       
+      console.log(coords2);
       map.setCenter(coords2);
     }
     
@@ -96,7 +96,11 @@ $(document).ready(function () {
     var lng = position.coords.longitude;
     
     coord = {lat: lat, lng: lng};
+    
+    var centerMarker = new H.map.Marker(coord);
+    map.addObject(centerMarker);
     map.setCenter(coord);
+    updateLocation(coord)
   }
   
   function errorFunction() {
@@ -105,7 +109,26 @@ $(document).ready(function () {
 });
 
 $("#updateDriverLocation").click(function () {
-  updateLocation('{lat: 10.832142, lng: 106.645863}')
+    if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+  }
+  
+  //Get the latitude and the longitude;
+  function successFunction(position) {
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    
+    coord = {lat: lat, lng: lng};
+    
+    var centerMarker = new H.map.Marker(coord);
+    map.addObject(centerMarker);
+    map.setCenter(coord);
+    updateLocation(coord)
+  }
+  
+  function errorFunction() {
+    alert("Geocoder failed");
+  }
 });
 
 function haversineDistance(coords1, coords2) {
@@ -119,12 +142,29 @@ function haversineDistance(coords1, coords2) {
   var dLat = toRad(coords2.lat - coords1.lat);
   var dLon = toRad(coords2.lng - coords1.lng);
   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+    Math.cos(toRad(coords1.lat)) * Math.cos(toRad(coords2.lat)) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var dis = R * c;
   
-  return dis;
+  return dis * 1000; // km => m
+};
+
+function getLocation() {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    contentType: "application/json",
+    url: "http://localhost:3000/driver/location",
+    timeout: 10000,
+    success: function (data) {
+      return data.coord
+    },
+    error: function (data) {
+      alert("Ajax failed");
+    }
+  });
+  return null
 };
 
 function updateLocation(location) {
