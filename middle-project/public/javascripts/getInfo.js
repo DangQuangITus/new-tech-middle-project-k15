@@ -1,11 +1,11 @@
 // var geocodemap = import("./geocode.js");
-$(document).ready(function() {
+$(document).ready(function () {
   $("body").bootstrapMaterialDesign();
   $('[data-toggle="tooltip"], [rel="tooltip"]').tooltip();
   // action form input infor
   document.querySelector("#formInfo").addEventListener(
     "submit",
-    function(event) {
+    function (event) {
       var date = new Date();
       var d = date.getDate();
       var y = date.getFullYear();
@@ -23,6 +23,9 @@ $(document).ready(function() {
         createddate: y + "-" + (m + 1) + "-" + d + " " + h + ":" + mi + ":" + s
       };
       console.log(JSON.stringify(info));
+      // socket.on("client-send-data", function (data) {
+      //   io.sockets.emit("send-data", "add");
+      // });
       // var link = "http://localhost:3000/apicaller";
       $.ajax({
         type: "POST",
@@ -32,10 +35,10 @@ $(document).ready(function() {
         url: "http://localhost:3000/apicaller",
         // cache: false,
         timeout: 10000,
-        success: function(data) {
+        success: function (data) {
           console.log(data);
         },
-        error: function(data) {
+        error: function (data) {
           alert("error");
         }
       });
@@ -236,7 +239,7 @@ function geocodemap(searchtext, id) {
 
   map.addEventListener(
     "dragstart",
-    function(ev) {
+    function (ev) {
       var target = ev.target;
       var pointer = ev.currentPointer;
       console.log("start pointer: ", pointer);
@@ -251,7 +254,7 @@ function geocodemap(searchtext, id) {
   // when dragging has completed
   map.addEventListener(
     "dragend",
-    function(event) {
+    function (event) {
       $("#labelgetclick").show();
 
       var coord = map.screenToGeo(
@@ -275,7 +278,7 @@ function geocodemap(searchtext, id) {
           app_id: "XWlu7av4mIl9LiVOkizU",
           app_code: "SWPg1es3nHq226fb1B6DMQ"
         },
-        success: function(data) {
+        success: function (data) {
           var address = JSON.stringify(data);
           //console.log("address: ", address);
           var currentAddress = data.Response.View[0].Result[0].Location.Address;
@@ -297,11 +300,11 @@ function geocodemap(searchtext, id) {
             dataType: "json",
             contentType: "application/json",
             timeout: 10000,
-            success: function(data) {
+            success: function (data) {
               console.log(" - data: ");
               console.log(data);
             },
-            error: function(data) {
+            error: function (data) {
               alert("error");
             }
           });
@@ -320,7 +323,7 @@ function geocodemap(searchtext, id) {
   // as necessary
   map.addEventListener(
     "drag",
-    function(ev) {
+    function (ev) {
       var target = ev.target,
         pointer = ev.currentPointer;
       if (target instanceof mapsjs.map.Marker) {
@@ -344,14 +347,14 @@ function defaultClick(id) {
     url: "http://localhost:3000/apicaller/useraddress/" + id,
     // cache: false,
     timeout: 10000,
-    success: function(json) {
+    success: function (json) {
       console.log(json.searchtext);
       $("#google-map-api").empty();
       $("#panel").empty();
       geocodemap(json.searchtext, id);
       $("#google-map-api").load();
     },
-    error: function(data) {
+    error: function (data) {
       alert("error");
     }
   });

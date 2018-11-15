@@ -33,7 +33,7 @@ server.on("listening", onListening);
  * Socket.io
  */
 var io = require("socket.io").listen(server, { log: true });
-io.sockets.on("connection", function(socket) {
+io.sockets.on("connection", function (socket) {
   customerRepo
     .loadAll()
     .then(rows => {
@@ -46,14 +46,45 @@ io.sockets.on("connection", function(socket) {
       res.end("View error log on console");
     });
 
-  socket.on("client-send-data", function(data) {
+  socket.on("send-data", function (data) {
     console.log("server received: ", JSON.stringify(data), " from ", socket.id);
-    // io.sockets.emit("server-send-data", "server:  " + data);
+    //    io.sockets.emit("server-send-data", "server:  " + data);
+    customerRepo
+      .add(
+        data.name,
+        data.address,
+        data.sdt,
+        data.note,
+        data.status,
+        data.createddate
+      )
+      .then(value => {
+        res.statusCode = 201;
+        // res.json({
+        //   msg: "customer added"
+        // });
 
-    socket.broadcast.emit("server-send-data", "from server:  " + data);
+        res.statusCode = 201;
+        customerRepo
+          .loadAll()
+          .then(rows => {
+            socket.emit("server-send-data", { data: rows });
+
+          })
+          .catch(err => {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("View error log on console");
+          });
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+      });
   });
 
-  socket.on("client-send-numbers", function(data) {
+  socket.on("client-send-numbers", function (data) {
     console.log(socket.id + " sent to server: " + JSON.stringify(data));
     var info = {
       data: data,
@@ -69,7 +100,7 @@ io.sockets.on("connection", function(socket) {
    });*/
 
   // This handles when a user is disconnected
-  socket.on("disconnect", function(o) {
+  socket.on("disconnect", function (o) {
     // find the user in the array
     // var index = users.indexOf(socket.id);
     // if (index != -1) {
