@@ -13,7 +13,15 @@ exports.geneId = () => {
 };
 
 exports.loadAll = () => {
-  var query = "SELECT id, name, address, phone, notes, status,reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y %H:%i:%S') as date FROM customer order by status asc, createddate desc";
+  var query = "SELECT id, name, address, phone, notes, status,"
+    + "CASE"
+    + " WHEN status = 1 THEN 'not locate' "
+    + " WHEN status = 2 THEN 'located'"
+    + " WHEN status = 3 THEN 'have driver'"
+    + " WHEN status = 4 THEN 'moving'"
+    + " WHEN status = 5 THEN 'completed'"
+    + " END as status1,"
+    + " reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y %H:%i:%S') as date FROM customer order by status asc, createddate desc";
   return db.load(query);
 };
 
