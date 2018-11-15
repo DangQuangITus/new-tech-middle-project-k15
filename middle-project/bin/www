@@ -49,7 +49,7 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("client-reload-data", function (data) {
     console.log("server received client reload data: ", data);
-    socket.emit("server-send-reload-data", { data: data });
+    socket.broadcast.emit("server-send-data", data);
   });
 
   socket.on("client-send-data", function (data) {
