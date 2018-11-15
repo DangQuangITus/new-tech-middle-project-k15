@@ -106,10 +106,13 @@
                                         + '<td>' + data[key].status1 + '</td>'
                                         + '<td>' + data[key].date + '</td>'
                                         + '<td class="td-actions text-center">'
-                                        + ' <button value=' + data[key].id + ' type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
+                                        + ' <button value="' + data[key].id + '" type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
 
                                 }
                                 document.getElementById('list').innerHTML = html;
+                                $(".getdemo").on('click', '.getdemo', function (event) {
+                                    alert('hello');
+                                });
                                 /*
                                         /                        var source = document.getElementById('template').innerHTML;
                                                                 var template = Handlebars.compile(source);
@@ -153,7 +156,7 @@
                         }
                     </script>
                     <tbody>
-                        {{!-- {{#each data}}
+                        {{#each data}}
                         <tr>
                             <td class="text-center">{{this.id}}</td>
                             <td>{{this.name}}</td>
@@ -168,7 +171,7 @@
                                 </button>
                             </td>
                         </tr>
-                        {{/each}} --}}
+                        {{/each}}
                     </tbody>
                 </table>
             </div>
