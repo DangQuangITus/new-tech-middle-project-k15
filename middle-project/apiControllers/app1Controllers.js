@@ -3,8 +3,6 @@ var customerRepo = require("../repos/customerRepo");
 var router = express.Router();
 var bodyParser = require("body-parser");
 
-var broadcastAll = require('../ws').broadcastAll;
-
 var app = express();
 app.use(bodyParser.json());
 
@@ -21,7 +19,6 @@ router.get("/", (req, res) => {
       // res.json({
       //   data: rows
       // });
-
 
       // var categories = [{
       //   name: "asasas"
@@ -50,16 +47,19 @@ router.get("/useraddress/:id", (req, res) => {
 
   customerRepo.single(id).then(c => {
     //console.log(c);
-    var status = '2';
-    customerRepo.updateStatus(status, c.id).then(value => {
-      console.log("update status located");
-      var address = c.address;
-      res.json({
-        searchtext: address
+    var status = "2";
+    customerRepo
+      .updateStatus(status, c.id)
+      .then(value => {
+        console.log("update status located");
+        var address = c.address;
+        res.json({
+          searchtext: address
+        });
+      })
+      .catch(err => {
+        res.end("fail");
       });
-    }).catch(err => {
-      res.end('fail');
-    });
   });
 });
 
@@ -68,14 +68,17 @@ router.get("/updateaddress", (req, res) => {
   var address = req.query.address;
   customerRepo.single(id).then(c => {
     //console.log(c);
-    customerRepo.updateAddressNew(address, c.id).then(value => {
-      console.log("update address successfully");
-      res.json({
-        newaddress: address
+    customerRepo
+      .updateAddressNew(address, c.id)
+      .then(value => {
+        console.log("update address successfully");
+        res.json({
+          newaddress: address
+        });
+      })
+      .catch(err => {
+        res.end("fail");
       });
-    }).catch(err => {
-      res.end('fail');
-    });
   });
 });
 
@@ -98,24 +101,22 @@ router.post("/", (req, res) => {
       //   msg: "customer added"
       // });
       var c = {
-        name: 'nnn'
-      }
+        name: "nnn"
+      };
       res.statusCode = 201;
       res.json({
-        msg: 'added'
+        msg: "added"
       });
-      customerRepo.loadAll().then(rows => {
-        //console.log(rows);
-        // res.render("index", {
-        //   title: "Đồ án giữa kỳ",
-        //   cus: rows
-        // });
-        var data = rows
-
-        // ws
-        var json = JSON.stringify(data);
-        broadcastAll(json);
-      })
+      customerRepo
+        .loadAll()
+        .then(rows => {
+          //console.log(rows);
+          // res.render("index", {
+          //   title: "Đồ án giữa kỳ",
+          //   cus: rows
+          // });
+          var data = rows;
+        })
         .catch(err => {
           console.log(err);
           res.statusCode = 500;
@@ -128,7 +129,5 @@ router.post("/", (req, res) => {
       res.end("View error log on console");
     });
   //res.json(ret);
-
-
 });
 module.exports = router;

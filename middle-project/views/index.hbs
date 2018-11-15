@@ -1,7 +1,57 @@
 {{!-- <h1>{{title}}</h1> --}}
 {{!-- <p>Welcome to {{title}}</p> --}}
 {{!-- <h3>Xây Dựng Hệ Thống Đặt xe máy qua thông tin khách hàng nhập vào</h3> --}}
+<script>
 
+    var datatable = null;
+    var socket = io("http://localhost:3000");
+
+    socket.on('server-send-data', function (data) {
+        console.log("client received: ", data.data[0]);
+        value = data.data;
+        var html = []
+        for (var key in value) {
+            html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
+                + '<td>' + value[key].notes + '</td>'
+                + '<td>' + value[key].status1 + '</td>'
+                + '<td>' + value[key].date + '</td>'
+                + '<td class="td-actions text-center">'
+                + ' <button value="' + value[key].id + '" onClick="defaultClick(' + value[key].id + ')"  type="button" class="btn btn-success btn-round getdemo"> Xem'
+                + '</button ></td >';
+        }
+        $('#list').append(html);
+
+
+
+    })
+
+    if (datatable) {
+        console.log("datatable: " + datatable)
+    }
+
+    $(document).ready(function () {
+
+
+
+        console.log("ready");
+        $("#mrA").click(function (e) {
+            console.log("mrA send");
+            socket.emit("client-send-data", "hello mrB");
+        })
+
+        $("#test-socket-form").submit(function (event) {
+            var data = {
+                num1: $("#num1").val(),
+                num2: $("#num2").val()
+            };
+
+            socket.emit('client-send-numbers', data);
+            event.preventDefault();
+        });
+
+    });
+
+</script>
 <div class="row">
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <div class="panel panel-primary">
@@ -75,88 +125,8 @@
                             </th>
                         </tr>
                     </thead>
-
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            setupWS();
-                            loadCategories();
-                        }
-
-                        var setupWS = function () {
-                            window.WebSocket = window.WebSocket || window.MozWebSocket;
-                            var ws = new WebSocket('ws://localhost:40510');
-
-                            ws.onopen = function () {
-                                console.log('connected');
-                                ws.send('connected websocket');
-                            }
-
-                            ws.onmessage = function (e) {
-                                // console.log(e);
-
-                                var data = JSON.parse(e.data);
-                                //var arr = [data];
-                                //console.log(arr[0][0].name);
-                                var html = "";
-                                for (var key in data) {
-                                    //   console.log(key);
-                                    // html += "<br/>;
-                                    html += '<tr><td class="text-center">' + data[key].id + '</td><td>' + data[key].name + '</td><td>' + data[key].address + '</td><td>' + data[key].phone + '</td>'
-                                        + '<td>' + data[key].notes + '</td>'
-                                        + '<td>' + data[key].status1 + '</td>'
-                                        + '<td>' + data[key].date + '</td>'
-                                        + '<td class="td-actions text-center">'
-                                        + ' <button value="' + data[key].id + '" type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
-
-                                }
-                                document.getElementById('list').innerHTML = html;
-                                $(".getdemo").on('click', '.getdemo', function (event) {
-                                    alert('hello');
-                                });
-                                /*
-                                        /                        var source = document.getElementById('template').innerHTML;
-                                                                var template = Handlebars.compile(source);
-                                                                var html = template(arr);
-                                                                document.getElementById('list').innerHTML += html; */
-                            }
-                        }
-
-                        var loadCategories = function () {
-                            var url = 'http://localhost:3000/apicaller';
-                            axios.get(url)
-                                .then(function (res) {
-                                    console.log("res: ");
-                                    console.log(res.data.categories);
-                                    var value = res.data.categories;
-                                    var data = value;
-                                    var html = "";
-                                    for (var key in value) {
-                                        //console.log(key + ' - ' + value[key].name);
-                                        // html += "<br/>" + value[key].name;
-                                        html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
-                                            + '<td>' + value[key].notes + '</td>'
-                                            + '<td>' + value[key].status1 + '</td>'
-                                            + '<td>' + value[key].date + '</td>'
-                                            // + '<td class="td-actions text-center">'
-                                            // + ' <button value="' + value[key].id + '" type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
-                                            + '<td class="td-actions text-center">'
-                                            + ' <button value=' + value[key].id + ' type="button" class="btn btn-success btn-round getdemo"> Xem'
-                                            + '</button ></td >';
-                                    }
-                                    document.getElementById('list').innerHTML = html;
-                                    /* var source = document.getElementById('template').innerHTML;
-                                     var template = Handlebars.compile(source);
-                                     var html = template(value);
-                                     document.getElementById('list').innerHTML += html;*/
-                                }).catch(function (err) {
-                                    console.log(err);
-                                }).then(function () {
-
-                                })
-                        }
-                    </script>
-                    <tbody>
-                        {{#each data}}
+                    <tbody id="databody">
+                        {{#each datatable}}
                         <tr>
                             <td class="text-center">{{this.id}}</td>
                             <td>{{this.name}}</td>
@@ -219,6 +189,3 @@
                 </tbody>
             </table>
         </div>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
