@@ -13,7 +13,7 @@ exports.geneId = () => {
 };
 
 exports.loadAll = () => {
-  var query = "SELECT id, name, address, phone, notes, status,reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y') as date FROM customer order by createddate desc";
+  var query = "SELECT id, name, address, phone, notes, status,reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y %H:%i:%S') as date FROM customer order by status asc, createddate desc";
   return db.load(query);
 };
 

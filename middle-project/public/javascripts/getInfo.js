@@ -6,17 +6,21 @@ $(document).ready(function () {
   document.querySelector("#formInfo").addEventListener(
     "submit",
     function (event) {
-      var d = new Date().getDate();
-      var y = new Date().getFullYear();
-      var m = new Date().getMonth();
+      var date = new Date();
+      var d = date.getDate();
+      var y = date.getFullYear();
+      var m = date.getMonth();
+      var h = date.getHours();
+      var mi = date.getMinutes();
+      var s = date.getSeconds();
       console.log(y + "-" + (m + 1) + "-" + d);
       var info = {
         name: $("#username").val(),
         sdt: $("#phonenumber").val(),
         address: $("#address").val(),
         note: $("#note").val(),
-        status: "not located",
-        createddate: y + "-" + (m + 1) + "-" + d
+        status: "1",
+        createddate: y + "-" + (m + 1) + "-" + d + " " + h + ":" + mi + ":" + s
       };
       console.log(JSON.stringify(info));
       // var link = "http://localhost:3000/apicaller";
@@ -62,7 +66,7 @@ $(document).ready(function () {
 
   $(".getdemo").on('click', function (event) {
     var id = event.target.value;
-
+    //alert(id);
     $.ajax({
       type: "GET",
       contentType: "application/json",
@@ -88,8 +92,7 @@ $(document).ready(function () {
 ///=============================================================================
 
 function geocodemap(searchtext, id) {
-  console.log("vo ham geo code map");
-
+  // alert("SEARCH:" + searchtext);
   function geocode(platform) {
     var geocoder = platform.getGeocodingService(),
       geocodingParameters = {
@@ -276,7 +279,7 @@ function geocodemap(searchtext, id) {
         },
         success: function (data) {
           var address = JSON.stringify(data);
-          console.log("address: ", address);
+          //console.log("address: ", address);
           var currentAddress = data.Response.View[0].Result[0].Location.Address;
           var nowPosition =
             data.Response.View[0].Result[0].Location.Address.Label;

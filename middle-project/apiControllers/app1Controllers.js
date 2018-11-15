@@ -2,6 +2,9 @@ var express = require("express");
 var customerRepo = require("../repos/customerRepo");
 var router = express.Router();
 var bodyParser = require("body-parser");
+
+var broadcastAll = require('../ws').broadcastAll;
+
 var app = express();
 app.use(bodyParser.json());
 
@@ -10,8 +13,29 @@ router.get("/", (req, res) => {
     .loadAll()
     .then(rows => {
       //console.log(rows);
-      res.render("getCustomer", { data: rows });
-      return rows;
+      // res.render("index", {
+      //   title: "Đồ án giữa kỳ",
+      //   data: rows
+      // });
+      // return rows;
+      // res.json({
+      //   data: rows
+      // });
+
+
+      // var categories = [{
+      //   name: "asasas"
+      // }, {
+      //   name: "bbbb"
+      // }
+
+      // ]
+
+      var categories = rows;
+      res.json({
+        // categories
+        data: rows
+      });
     })
     .catch(err => {
       console.log(err);
@@ -26,26 +50,7 @@ router.get("/useraddress/:id", (req, res) => {
 
   customerRepo.single(id).then(c => {
     //console.log(c);
-    var status = 'located';
-    customerRepo.updateStatus(status, c.id).then(value => {
-      console.log("update status located");
-    }).catch(err => {
-      res.end('fail');
-    });
-    var address = c.address;
-    res.json({
-      searchtext: address
-    });
-  });
-});
-
-router.get("/useraddress/:id", (req, res) => {
-  console.log("req la: ", req.params);
-  var id = req.params.id;
-
-  customerRepo.single(id).then(c => {
-    //console.log(c);
-    var status = 'located';
+    var status = '2';
     customerRepo.updateStatus(status, c.id).then(value => {
       console.log("update status located");
       var address = c.address;
@@ -89,9 +94,33 @@ router.post("/", (req, res) => {
     )
     .then(value => {
       res.statusCode = 201;
+      // res.json({
+      //   msg: "customer added"
+      // });
+      var c = {
+        name: 'nnn'
+      }
+      res.statusCode = 201;
       res.json({
-        msg: "customer added"
+        msg: 'added'
       });
+      customerRepo.loadAll().then(rows => {
+        //console.log(rows);
+        // res.render("index", {
+        //   title: "Đồ án giữa kỳ",
+        //   cus: rows
+        // });
+        var data = rows
+
+        // ws
+        var json = JSON.stringify(data);
+        broadcastAll(json);
+      })
+        .catch(err => {
+          console.log(err);
+          res.statusCode = 500;
+          res.end("View error log on console");
+        });
     })
     .catch(err => {
       console.log(err);
@@ -99,5 +128,7 @@ router.post("/", (req, res) => {
       res.end("View error log on console");
     });
   //res.json(ret);
+
+
 });
 module.exports = router;
