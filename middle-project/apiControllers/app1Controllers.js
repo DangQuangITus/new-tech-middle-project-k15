@@ -10,24 +10,6 @@ router.get("/", (req, res) => {
   customerRepo
     .loadAll()
     .then(rows => {
-      //console.log(rows);
-      // res.render("index", {
-      //   title: "Đồ án giữa kỳ",
-      //   data: rows
-      // });
-      // return rows;
-      // res.json({
-      //   data: rows
-      // });
-
-      // var categories = [{
-      //   name: "asasas"
-      // }, {
-      //   name: "bbbb"
-      // }
-
-      // ]
-
       var categories = rows;
       res.json({
         categories
@@ -97,25 +79,16 @@ router.post("/", (req, res) => {
     )
     .then(value => {
       res.statusCode = 201;
-      // res.json({
-      //   msg: "customer added"
-      // });
-      var c = {
-        name: "nnn"
-      };
+      var c = { name: "nnn" };
       res.statusCode = 201;
-      res.json({
-        msg: "added"
-      });
+
       customerRepo
         .loadAll()
         .then(rows => {
-          //console.log(rows);
-          // res.render("index", {
-          //   title: "Đồ án giữa kỳ",
-          //   cus: rows
-          // });
           var data = rows;
+          res.json({
+            data
+          });
         })
         .catch(err => {
           console.log(err);

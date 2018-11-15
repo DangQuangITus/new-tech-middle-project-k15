@@ -46,20 +46,13 @@ io.sockets.on("connection", function(socket) {
       res.end("View error log on console");
     });
 
-  socket.on("client-send-data", function(data) {
-    console.log("server received: ", JSON.stringify(data), " from ", socket.id);
-    // io.sockets.emit("server-send-data", "server:  " + data);
-
-    socket.broadcast.emit("server-send-data", "from server:  " + data);
+  socket.on("client-reload-data", function(data) {
+    console.log("server received client reload data: ", data);
+    socket.emit("server-send-reload-data", { data: data });
   });
 
-  socket.on("client-send-numbers", function(data) {
-    console.log(socket.id + " sent to server: " + JSON.stringify(data));
-    var info = {
-      data: data,
-      client: socket.id
-    };
-    socket.broadcast.emit("server-send-numbers", info);
+  socket.on("client-send-data", function(data) {
+    console.log("server received: ", JSON.stringify(data), " from ", socket.id);
   });
 
   /*// This is a listener to the signal "something"

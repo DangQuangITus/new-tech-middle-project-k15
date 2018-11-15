@@ -7,8 +7,9 @@
     var socket = io("http://localhost:3000");
 
     socket.on('server-send-data', function (data) {
-        console.log("client received: ", data.data[0]);
+        //console.log("client received: ", data.data[0]);
         value = data.data;
+        $('#list').empty();
         var html = []
         for (var key in value) {
             html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
@@ -20,36 +21,13 @@
                 + '</button ></td >';
         }
         $('#list').append(html);
-
-
-
-    })
-
-    if (datatable) {
-        console.log("datatable: " + datatable)
-    }
-
-    $(document).ready(function () {
-
-
-
-        console.log("ready");
-        $("#mrA").click(function (e) {
-            console.log("mrA send");
-            socket.emit("client-send-data", "hello mrB");
-        })
-
-        $("#test-socket-form").submit(function (event) {
-            var data = {
-                num1: $("#num1").val(),
-                num2: $("#num2").val()
-            };
-
-            socket.emit('client-send-numbers', data);
-            event.preventDefault();
-        });
-
     });
+
+    socket.on('server-send-reload-data', function (data) {
+        console.log("========================");
+        console.log("reload data received from server: ", data);
+    });
+
 
 </script>
 <div class="row">
