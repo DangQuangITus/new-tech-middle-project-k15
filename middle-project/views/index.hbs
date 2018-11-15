@@ -103,7 +103,7 @@
                                     // html += "<br/>;
                                     html += '<tr><td class="text-center">' + data[key].id + '</td><td>' + data[key].name + '</td><td>' + data[key].address + '</td><td>' + data[key].phone + '</td>'
                                         + '<td>' + data[key].notes + '</td>'
-                                        + '<td>' + data[key].status + '</td>'
+                                        + '<td>' + data[key].status1 + '</td>'
                                         + '<td>' + data[key].date + '</td>'
                                         + '<td class="td-actions text-center">'
                                         + ' <button value=' + data[key].id + ' type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
@@ -127,20 +127,20 @@
                                     var value = res.data.categories;
                                     var data = value;
                                     var html = "";
-                                    /*    for (var key in value) {
-                                            //console.log(key + ' - ' + value[key].name);
-                                            // html += "<br/>" + value[key].name;
-                                            html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
-                                                + '<td>' + value[key].notes + '</td>'
-                                                + '<td>' + value[key].status + '</td>'
-                                                + '<td>' + value[key].date + '</td>'
-                                                // + '<td class="td-actions text-center">'
-                                                // + ' <button value="' + value[key].id + '" type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
-                                                + '<td class="td-actions text-center">'
-                                                + ' <button value=' + value[key].id + 'type="button" class="btn btn-success btn-round getdemo"> Xem'
-                                                + '</button ></td >';
-                                        }
-                                        document.getElementById('list').innerHTML = html;*/
+                                    for (var key in value) {
+                                        //console.log(key + ' - ' + value[key].name);
+                                        // html += "<br/>" + value[key].name;
+                                        html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
+                                            + '<td>' + value[key].notes + '</td>'
+                                            + '<td>' + value[key].status1 + '</td>'
+                                            + '<td>' + value[key].date + '</td>'
+                                            // + '<td class="td-actions text-center">'
+                                            // + ' <button value="' + value[key].id + '" type="button" class="btn btn-info btn-round getdemo"> Xem </button></td></tr>';
+                                            + '<td class="td-actions text-center">'
+                                            + ' <button value=' + value[key].id + ' type="button" class="btn btn-success btn-round getdemo"> Xem'
+                                            + '</button ></td >';
+                                    }
+                                    document.getElementById('list').innerHTML = html;
                                     /* var source = document.getElementById('template').innerHTML;
                                      var template = Handlebars.compile(source);
                                      var html = template(value);
@@ -153,7 +153,7 @@
                         }
                     </script>
                     <tbody>
-                        {{#each data}}
+                        {{!-- {{#each data}}
                         <tr>
                             <td class="text-center">{{this.id}}</td>
                             <td>{{this.name}}</td>
@@ -168,7 +168,7 @@
                                 </button>
                             </td>
                         </tr>
-                        {{/each}}
+                        {{/each}} --}}
                     </tbody>
                 </table>
             </div>

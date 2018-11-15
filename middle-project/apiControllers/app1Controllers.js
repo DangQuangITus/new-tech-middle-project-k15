@@ -33,8 +33,8 @@ router.get("/", (req, res) => {
 
       var categories = rows;
       res.json({
-        // categories
-        data: rows
+        categories
+        //data: rows
       });
     })
     .catch(err => {

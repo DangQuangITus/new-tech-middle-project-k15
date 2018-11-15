@@ -66,7 +66,7 @@ $(document).ready(function () {
 
   $(".getdemo").on('click', function (event) {
     var id = event.target.value;
-    //alert(id);
+    alert(id);
     $.ajax({
       type: "GET",
       contentType: "application/json",
