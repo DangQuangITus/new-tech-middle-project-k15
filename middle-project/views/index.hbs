@@ -7,7 +7,7 @@
     var socket = io("http://localhost:3000");
 
     socket.on('server-send-data', function (data) {
-        //console.log("client received: ", data.data[0]);
+        console.log("client received: ", data);
         value = data.data;
         $('#list').empty();
         var html = []
