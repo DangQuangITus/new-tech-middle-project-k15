@@ -1,4 +1,6 @@
 // var geocodemap = import("./geocode.js");
+
+var socket = io("http://localhost:3000");
 $(document).ready(function () {
   $("body").bootstrapMaterialDesign();
   $('[data-toggle="tooltip"], [rel="tooltip"]').tooltip();
@@ -13,7 +15,7 @@ $(document).ready(function () {
       var h = date.getHours();
       var mi = date.getMinutes();
       var s = date.getSeconds();
-      console.log(y + "-" + (m + 1) + "-" + d);
+      // console.log(y + "-" + (m + 1) + "-" + d);
       var info = {
         name: $("#username").val(),
         sdt: $("#phonenumber").val(),
@@ -22,11 +24,8 @@ $(document).ready(function () {
         status: "1",
         createddate: y + "-" + (m + 1) + "-" + d + " " + h + ":" + mi + ":" + s
       };
-      console.log(JSON.stringify(info));
-      // socket.on("client-send-data", function (data) {
-      //   io.sockets.emit("send-data", "add");
-      // });
-      // var link = "http://localhost:3000/apicaller";
+      // console.log(JSON.stringify(info));
+
       $.ajax({
         type: "POST",
         dataType: "json",
@@ -35,8 +34,10 @@ $(document).ready(function () {
         url: "http://localhost:3000/apicaller",
         // cache: false,
         timeout: 10000,
+
         success: function (data) {
-          console.log(data);
+          console.log("sau khi post: ", data);
+          socket.emit("client-reload-data", data);
         },
         error: function (data) {
           alert("error");
@@ -66,30 +67,6 @@ $(document).ready(function () {
     };
     //console.log(info);
   };
-
-  // $("button.getdemo").on("click", ".getdemo", function(event) {
-  //   console.log("-----------------------------------------");
-  //   var id = event.target.value;
-  //   // alert(id);
-  //   $.ajax({
-  //     type: "GET",
-  //     contentType: "application/json",
-  //     url: "http://localhost:3000/apicaller/useraddress/" + id,
-  //     // cache: false,
-  //     timeout: 10000,
-  //     success: function(json) {
-  //       console.log(json.searchtext);
-  //       $("#google-map-api").empty();
-  //       $("#panel").empty();
-  //       geocodemap(json.searchtext, id);
-  //       $("#google-map-api").load();
-  //     },
-  //     error: function(data) {
-  //       alert("error");
-  //     }
-  //   });
-  //   //  console.log(event.target.value);
-  // });
 });
 
 ///=============================================================================
