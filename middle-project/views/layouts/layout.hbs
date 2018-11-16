@@ -3,7 +3,8 @@
 
 <head>
 	<title>{{title}}</title>
-	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	{{!--
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script> --}}
 	<script src="/socket.io/socket.io.js"></script>
 	<link rel='stylesheet' href='/css/map-css.css' />
 	<link rel='stylesheet' href='/css/table.css' />
@@ -29,6 +30,20 @@
 	<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
 	<script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
 
+	<!-- Bootstrap core CSS -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Bootstrap core CSS -->
+	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom fonts for this template -->
+	<link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+	<link href="/css/agency.min.css" rel="stylesheet">
+
+
 </head>
 
 <body>
@@ -39,18 +54,12 @@
 
 	{{!-- content of body --}}
 
-	<div class="fluid-container">
-		<div class="row">
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
-				{{> header}}
-				{{{body}}}
+	{{> header}}
+	{{{body}}}
 
-			</div>
-		</div> {{!-- row --}}
-	</div> {{!-- fluid-container --}}
 
-	<script type="text/javascript" src="/javascripts/getInfo.js"></script>
+
 
 </body>
 
