@@ -1,17 +1,18 @@
 var express = require("express");
 var driverRepo = require("../repos/driverRepo");
 var bodyParser = require("body-parser");
-
+// var session = require("express-session");
 var router = express.Router();
 var app = express();
-
+var status = require("./../public/constants/status");
 app.use(bodyParser.json());
+var sessionstorage = require("sessionstorage");
 
+// session.startSession(req, res, callback);
 var sessionChecker = (req, res, next) => {
   if (req.cookies.user_sid && req.session.user) {
-    res.render("driverindex", {
-      title: "Driver Index page"
-    });
+    // res.render("driverindex", { title: "Driver Index page" });
+    res.redirect(req.route.path + "apidriver");
   } else {
     next();
   }
@@ -54,7 +55,15 @@ router.post("/login", (req, res) => {
     .login(req.body)
     .then(rows => {
       if (rows.length > 0) {
-        req.session.user = rows[0].id;
+        driverRepo
+          .changeDriverStatus(status.available, rows[0].username)
+          .then(rows => {
+            console.log("update status: ", rows);
+          });
+        sessionstorage.setItem(rows[0].id, rows[0].username);
+        console.log("login data: ", rows[0]);
+        res.id = rows[0].id;
+        console.log("res id: ", res.set);
         res.redirect("/apidriver");
       } else {
         res.redirect("/driver/login");
@@ -154,8 +163,10 @@ router.put("/status", (req, res) => {
 });
 
 // route for user logout
-app.get("/logout", (req, res) => {
-  if (req.session.user && req.cookies.user_sid) {
+router.post("/logout", (req, res) => {
+  console.log("logout");
+  if (req.cookies.user_sid) {
+    console.log(req.cookies.user_sid);
     res.clearCookie("user_sid");
     res.redirect("/");
   } else {

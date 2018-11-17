@@ -1,3 +1,22 @@
+$("#driverlogout").click(function() {
+  alert("hihi");
+  $.ajax({
+    type: "POST",
+    data: null,
+    // contentType: "application/json",
+    url: "http://localhost:3000/driver/logout",
+    // cache: false,
+    timeout: 10000,
+    success: function(data) {
+      // console.log("sau khi post: ", data);
+      // socket.emit("client-reload-data", data);
+    },
+    error: function(data) {
+      alert("error");
+    }
+  });
+});
+
 $("#driver_register").click(function() {
   var phone = $("#driver_phone").val();
 
