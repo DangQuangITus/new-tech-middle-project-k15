@@ -101,10 +101,11 @@ router.put('/location', (req, res) => {
 router.get('/status', (req, res) => {
   driverRepo.get_status(req.session.user)
   .then(rows => {
-    var status = {};
+    var status = "";
     if (rows.length) {
-      status = rows[0].status
+      status = rows
     }
+    console.log(status);
     res.json({
       status: status
     })

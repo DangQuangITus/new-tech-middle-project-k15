@@ -6,7 +6,7 @@ $("#driver_register").click(function () {
     return false;
   }
   
-  var password1 = $("#driver_password1").val();
+  var password1 = $("#driver_password").val();
   var password2 = $("#driver_password2").val();
   
   if (password1 !== password2) {
