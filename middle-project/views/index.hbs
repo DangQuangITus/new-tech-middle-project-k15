@@ -18,6 +18,7 @@
                 + '<td>' + value[key].date + '</td>'
                 + '<td class="td-actions text-center">'
                 + ' <button value="' + value[key].id + '" onClick="defaultClick(' + value[key].id + ')"  type="button" class="btn btn-success btn-round getdemo"> Xem'
+                + '</button ></td ><td><button value="' + value[key].id + '" onClick="requestDriver(' + value[key].id + ')"  type="button" class="btn btn-danger btn-round getdemo"> Đặt xe'
                 + '</button ></td >';
         }
         $('#list').append(html);
@@ -177,13 +178,6 @@
         <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
             crossorigin="anonymous"></script>
 
-        <script type="text/javascript">
-            $(document).ready(function () {
-
-            });
-
-
-        </script>
         <hr />
         <h2>Danh sách thông tin khách hàng</h2>
         <div class="table-responsive">

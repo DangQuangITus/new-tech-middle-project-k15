@@ -1,6 +1,6 @@
 var db = require("../fn/db");
 var md5 = require("crypto-js/md5");
-var status = require("./../public/constants/status");
+var status = require("../public/constants/statusdriver");
 exports.add = data => {
   // var status = "disable";
   var md5_pwd = md5(data.driver_password);
@@ -11,6 +11,11 @@ exports.add = data => {
     data.driver_phone
   }', '${status.disable}');`;
   return db.save(query);
+};
+
+exports.loadAllAvaiable = () => {
+  var sql = "select * from driver where status = '" + status.available + "'";
+  return db.load(sql);
 };
 
 exports.changeDriverStatus = (status, username) => {

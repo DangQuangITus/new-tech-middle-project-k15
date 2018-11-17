@@ -2,9 +2,34 @@ var express = require("express");
 var customerRepo = require("../repos/customerRepo");
 var router = express.Router();
 var bodyParser = require("body-parser");
-
+var driverRepo = require("./../repos/driverRepo");
 var app = express();
+var HereMapsAPI = require("here-maps-node").default;
+
 app.use(bodyParser.json());
+
+var config = {
+  app_id: "XWlu7av4mIl9LiVOkizU",
+  app_code: "SWPg1es3nHq226fb1B6DMQ"
+};
+var hmAPI = new HereMapsAPI(config);
+
+// geocode API
+
+// hmAPI.geocode(geocodeParams, function(err, result) {
+//   console.log(result);
+// });
+
+// // matrix routing API
+// var matrixRoutingParams = {
+//   start0: "25.6586716,-100.3583278",
+//   destination0: "25.6522234,-100.2942806",
+//   mode: "fastest;car;traffic:enabled;" // this mode is set by default
+// };
+
+// hmAPI.matrixRouting(matrixRoutingParams, function(err, result) {
+//   console.log(result);
+// });
 
 router.get("/", (req, res) => {
   customerRepo
@@ -42,6 +67,41 @@ router.get("/useraddress/:id", (req, res) => {
       .catch(err => {
         res.end("fail");
       });
+  });
+});
+
+router.get("/getdriver/:id", (req, res) => {
+  // console.log("req la: ", req.params);
+  var id = req.params.id;
+  customerRepo.single(id).then(c => {
+    var drivers;
+    var customerPosition;
+    if (c) {
+      console.log(c.address);
+      var geocodeParams = {
+        searchtext: c.address
+      };
+
+      hmAPI.geocode(geocodeParams, function(err, result) {
+        console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
+
+        driverRepo
+          .loadAllAvaiable()
+          .then(rows => {
+            drivers = rows;
+            console.log("drover load: ", drivers);
+            console.log("customre: ", customerPosition);
+            res.json({
+              drivers: drivers,
+              customer:
+                result.Response.View[0].Result[0].Location.DisplayPosition
+            });
+          })
+          .catch(err => {
+            res.end("fail");
+          });
+      });
+    }
   });
 });
 

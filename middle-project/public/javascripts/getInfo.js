@@ -336,3 +336,20 @@ function defaultClick(id) {
     }
   });
 }
+
+function requestDriver(id) {
+  console.log("clicked: ", id);
+  $.ajax({
+    type: "GET",
+    contentType: "application/json",
+    url: "http://localhost:3000/apicaller/getdriver/" + id,
+    // cache: false,
+    timeout: 1000000,
+    success: function(json) {
+      console.log(json);
+    },
+    error: function(data) {
+      alert("error");
+    }
+  });
+}

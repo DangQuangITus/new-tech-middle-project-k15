@@ -4,7 +4,7 @@ var bodyParser = require("body-parser");
 // var session = require("express-session");
 var router = express.Router();
 var app = express();
-var status = require("./../public/constants/status");
+var status = require("../public/constants/statusdriver");
 app.use(bodyParser.json());
 var sessionstorage = require("sessionstorage");
 
