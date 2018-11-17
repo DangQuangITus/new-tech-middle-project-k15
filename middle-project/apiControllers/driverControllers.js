@@ -50,13 +50,12 @@ router.get("/login", sessionChecker, (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  console.log("body info: ", req.body);
   driverRepo
     .login(req.body)
     .then(rows => {
       if (rows.length > 0) {
         req.session.user = rows[0].id;
-        res.redirect("/driver");
+        res.redirect("/apidriver");
       } else {
         res.redirect("/driver/login");
       }
@@ -106,10 +105,11 @@ router.get("/status", (req, res) => {
   driverRepo
     .get_status(req.session.user)
     .then(rows => {
-      var status = {};
+      var status = "";
       if (rows.length) {
-        status = rows[0].status;
+        status = rows;
       }
+      console.log(status);
       res.json({
         status: status
       });

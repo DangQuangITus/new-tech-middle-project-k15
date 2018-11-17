@@ -48,8 +48,20 @@
     <h2 class="section-heading text-uppercase">Bản đồ</h2>
   </div>
 </div><br />
-<div id="map" style="width: 80%; height: 500px; background: grey; margin:auto;" />
-<script type="text/javascript" charset="UTF-8">
+{{!--
+<div id="map-driver" style="width: 80%; height: 500px; background: grey; margin:auto;" /> --}}
+<div class="row">
+  <div id="map-driver" style="width: 80%; height: 500px; margin:auto;" class="text-center">
+  </div>
+</div>
+<div class="row">
+  <span id="driverStatus"></span>
+</div>
+<div class="row">
+  <button id="updateDriverStatusBtn" type="button" class="btn btn-danger">Update Driver Status</button>
+</div>
+<script type="text/javascript" src="/javascripts/driverjs.js"></script>
+{{!-- <script type="text/javascript" charset="UTF-8">
 
   /**
    * An event listener is added to listen to tap events on the map.
@@ -89,7 +101,7 @@
   });
 
   //Step 2: initialize a map
-  var map = new H.Map(document.getElementById('map'),
+  var map = new H.Map(document.getElementById('map-driver'),
     defaultLayers.normal.map, {
       center: { lat: 30.94625288456589, lng: -54.10861860580418 },
       zoom: 1,
@@ -102,7 +114,7 @@
   var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
   setUpClickListener(map);
-</script>
+</script> --}}
 <!-- Services -->
 <section id="services">
   <div class="container">

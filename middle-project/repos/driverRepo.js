@@ -1,11 +1,12 @@
 var db = require("../fn/db");
-// var SHA256 = require("crypto-js/sha256");
-// var CryptoJS = require("crypto-js");
+var SHA256 = require("crypto-js/sha256");
+var CryptoJS = require("crypto-js");
 var sha1 = require("js-sha1");
+
 exports.add = data => {
   var status = "disable";
   // var SHA256_PW = SHA256(data.driver_password);
-  var pw = sha1(data.driver_password);
+  var pw = sha1.hex(data.driver_password);
 
   console.log("add: ", pw);
   var query = `insert into driver(username, password, first_name, last_name, phone, status) values('${
@@ -19,7 +20,7 @@ exports.add = data => {
 exports.login = data => {
   // var SHA256_PW = String(SHA256(data.driver_password));
   // var SHA256_PW2 = SHA256(data.driver_password);
-  var pw = sha1(data_driver_password);
+  var pw = sha1.hex(data.driver_password);
   console.log(pw);
   var sql = `select * from driver where username = '${
     data.driver_username
