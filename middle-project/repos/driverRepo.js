@@ -16,13 +16,19 @@ exports.login = data => {
 };
 
 exports.get_location = (driver_id) => {
-  var sql = `select * from driver where id = '${driver_id}'`;
+  var sql = `select location from driver where id = '${driver_id}'`;
   return db.load(sql);
 };
 
 exports.update_location = (driver_id, driver_location) => {
-  var sql = `update driver set location = '${driver_location}' where id = '${driver_id}'`;
+  location = JSON.stringify(driver_location);
+  var sql = `update driver set location = '${location}' where id = '${driver_id}'`;
   return db.save(sql);
+};
+
+exports.get_status = (driver_id) => {
+  var sql = `select status from driver where id = '${driver_id}'`;
+  return db.load(sql);
 };
 
 exports.update_status = (driver_id, driver_status) => {

@@ -106,10 +106,16 @@ $(document).ready(function () {
   function errorFunction() {
     alert("Geocoder failed");
   }
+  
+  status = getStatus();
+  console.log('Status', status);
+  
+  if (status != null)
+    $("#driverStatus").text(status);
 });
 
 $("#updateDriverLocation").click(function () {
-    if (navigator.geolocation) {
+  if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
   }
   
@@ -169,7 +175,7 @@ function getLocation() {
 
 function updateLocation(location) {
   $.ajax({
-    type: "POST",
+    type: "PUT",
     dataType: "json",
     data: JSON.stringify({'location': location}),
     contentType: "application/json",
@@ -183,5 +189,39 @@ function updateLocation(location) {
     }
   });
 };
+
+function getStatus(){
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    contentType: "application/json",
+    url: "http://localhost:3000/driver/status",
+    timeout: 10000,
+    success: function (data) {
+      return data.status
+    },
+    error: function (data) {
+      alert("Ajax failed");
+    }
+  });
+  
+  return null
+}
+
+$("#updateDriverStatusBtn").click(function () {
+  $.ajax({
+    type: "PUT",
+    dataType: "json",
+    contentType: "application/json",
+    url: "http://localhost:3000/driver/status",
+    timeout: 10000,
+    success: function (data) {
+      console.log(data);
+    },
+    error: function (data) {
+      alert("Ajax failed");
+    }
+  });
+});
 
 

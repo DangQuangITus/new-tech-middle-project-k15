@@ -44,7 +44,7 @@ router.post("/register", (req, res) => {
 // Login
 router.get('/login', sessionChecker, (req, res) => {
   res.render("driverlogin", {
-    title: "Driver register form",
+    title: "Driver login form",
   });
 });
 
@@ -70,7 +70,7 @@ router.get('/location', (req, res) => {
   driverRepo.get_location(req.session.user)
   .then(rows => {
     var coord = {};
-    if (rows.length){
+    if (rows.length) {
       coord = rows[0].location
     }
     res.json({
@@ -84,7 +84,7 @@ router.get('/location', (req, res) => {
   })
 });
 
-router.post('/location', (req, res) => {
+router.put('/location', (req, res) => {
   driverRepo.update_location(req.session.user, req.body.location)
   .then(rows => {
     res.json({
@@ -96,6 +96,57 @@ router.post('/location', (req, res) => {
     res.statusCode = 500;
     res.end('View error log on console');
   })
+});
+
+router.get('/status', (req, res) => {
+  driverRepo.get_status(req.session.user)
+  .then(rows => {
+    var status = {};
+    if (rows.length) {
+      status = rows[0].status
+    }
+    res.json({
+      status: status
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  })
+});
+
+router.put('/status', (req, res) => {
+  driverRepo.get_location(req.session.user)
+  .then(rows => {
+    if (rows.length) {
+      var current_status = rows[0].status;
+      
+      if (current_status === "disable")
+        current_status = "ready";
+      else if (current_status === "ready")
+        current_status = "busy";
+      else if (current_status === "busy")
+        current_status = "disable";
+      
+      driverRepo.update_status(req.session.user, current_status)
+      .then(rows => {
+        res.json({
+          msg: 'Updated status'
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on console');
+      });
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end('View error log on console');
+  });
 });
 
 // route for user logout
