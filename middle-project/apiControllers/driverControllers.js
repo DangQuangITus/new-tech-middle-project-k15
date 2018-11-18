@@ -12,7 +12,7 @@ var sessionstorage = require("sessionstorage");
 var sessionChecker = (req, res, next) => {
   if (req.cookies.user_sid && req.session.user) {
     // res.render("driverindex", { title: "Driver Index page" });
-    res.redirect(req.route.path + "apidriver");
+    res.redirect("/apidriver");
   } else {
     next();
   }
