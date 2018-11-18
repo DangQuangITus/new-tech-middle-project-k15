@@ -39,11 +39,11 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  if (req.cookies.user_sid && !req.session.user) {
-    res.clearCookie("user_sid");
-  } else if (req.cookies.user_sid && !req.session.admin) {
-    res.clearCookie("user_sid");
-  }
+  // if (req.cookies.user_sid && !req.session.user) {
+  //   res.clearCookie("user_sid");
+  // } else if (req.cookies.user_sid && !req.session.admin) {
+  //   res.clearCookie("user_sid");
+  // }
   next();
 });
 

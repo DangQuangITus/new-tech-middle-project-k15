@@ -15,6 +15,23 @@ $("#driver_register").click(function() {
   }
 });
 
+$("#add_admin").click(function() {
+  var phone = $("#admin_phone").val();
+
+  if (isNaN(phone)) {
+    alert("Phone number must be number");
+    return false;
+  }
+
+  var password1 = $("#admin_password").val();
+  var password2 = $("#admin_password2").val();
+
+  if (password1 !== password2) {
+    alert("Retry confirm password");
+    return false;
+  }
+});
+
 var map, marker, current_location;
 var MAX_DIS = 100; // m
 
