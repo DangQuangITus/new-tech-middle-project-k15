@@ -82,19 +82,20 @@ router.get("/getdriver/:id", (req, res) => {
         searchtext: c.address
       };
 
-      hmAPI.geocode(geocodeParams, function(err, result) {
+      hmAPI.geocode(geocodeParams, function (err, result) {
         console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
 
         driverRepo
           .loadAllAvaiable()
           .then(rows => {
             drivers = rows;
-            console.log("drover load: ", drivers);
-            console.log("customre: ", customerPosition);
+            console.log("driver load: ", drivers);
+            console.log("customer: ", customerPosition);
             res.json({
               drivers: drivers,
               customer:
-                result.Response.View[0].Result[0].Location.DisplayPosition
+                result.Response.View[0].Result[0].Location.DisplayPosition,
+              id: c.id
             });
           })
           .catch(err => {
