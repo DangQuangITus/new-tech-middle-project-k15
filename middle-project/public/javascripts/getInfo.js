@@ -387,6 +387,8 @@ function requestDriver(id) {
         idcustomer: json.id
       }
       console.log(datasend);
+      socket.emit("client-getdriver-data", datasend);
+
 
     },
     error: function (data) {
