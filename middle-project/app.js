@@ -10,9 +10,9 @@ var usersRouter = require("./routes/users");
 var expressHbs = require("express-handlebars");
 var app = express();
 var driverController = require("./apiControllers/driverControllers");
-
+var adminController = require("./routes/adminController");
 var apiController = require("./apiControllers/app1Controllers");
-var apiController4 = require("./apiControllers/app4Controller");
+// var apiController4 = require("./apiControllers/app4Controller");
 
 // view engine setup
 app.engine(".hbs", expressHbs({ defaultLayout: "layout", extname: ".hbs" }));
@@ -41,6 +41,8 @@ app.use(
 app.use((req, res, next) => {
   if (req.cookies.user_sid && !req.session.user) {
     res.clearCookie("user_sid");
+  } else if (req.cookies.user_sid && !req.session.admin) {
+    res.clearCookie("user_sid");
   }
   next();
 });
@@ -49,7 +51,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/driver", driverController);
 app.use("/apicaller", apiController);
-app.use("/apidriver", apiController4);
+app.use("/admin", adminController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

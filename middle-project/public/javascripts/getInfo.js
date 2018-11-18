@@ -1,13 +1,13 @@
 // var geocodemap = import("./geocode.js");
 
 var socket = io("http://localhost:3000");
-$(document).ready(function () {
+$(document).ready(function() {
   $("body").bootstrapMaterialDesign();
   $('[data-toggle="tooltip"], [rel="tooltip"]').tooltip();
   // action form input infor
   document.querySelector("#formInfo").addEventListener(
     "submit",
-    function (event) {
+    function(event) {
       var date = new Date();
       var d = date.getDate();
       var y = date.getFullYear();
@@ -35,11 +35,11 @@ $(document).ready(function () {
         // cache: false,
         timeout: 10000,
 
-        success: function (data) {
+        success: function(data) {
           console.log("sau khi post: ", data);
           socket.emit("client-reload-data", data);
         },
-        error: function (data) {
+        error: function(data) {
           alert("error");
         }
       });
@@ -164,22 +164,6 @@ function geocodemap(searchtext, id) {
         lng: locations[i].location.displayPosition.longitude
       };
 
-      // content +=
-      //   "<strong>houseNumber:</strong> " + address.houseNumber + "<br/>";
-      // content += "<strong>street:</strong> " + address.street + "<br/>";
-      // content += "<strong>district:</strong> " + address.district + "<br/>";
-      // content += "<strong>city:</strong> " + address.city + "<br/>";
-      // content += "<strong>postalCode:</strong> " + address.postalCode + "<br/>";
-      // content += "<strong>county:</strong> " + address.county + "<br/>";
-      // content += "<strong>country:</strong> " + address.country + "<br/>";
-      // content +=
-      //   "<br/><strong>position:</strong> " +
-      //   Math.abs(position.lat.toFixed(4)) +
-      //   (position.lat > 0 ? "N" : "S") +
-      //   " " +
-      //   Math.abs(position.lng.toFixed(4)) +
-      //   (position.lng > 0 ? "E" : "W");
-
       divLabel.innerHTML = content;
       li.appendChild(divLabel);
 
@@ -216,7 +200,7 @@ function geocodemap(searchtext, id) {
 
   map.addEventListener(
     "dragstart",
-    function (ev) {
+    function(ev) {
       var target = ev.target;
       var pointer = ev.currentPointer;
       console.log("start pointer: ", pointer);
@@ -231,7 +215,7 @@ function geocodemap(searchtext, id) {
   // when dragging has completed
   map.addEventListener(
     "dragend",
-    function (event) {
+    function(event) {
       $("#labelgetclick").show();
 
       var coord = map.screenToGeo(
@@ -255,7 +239,7 @@ function geocodemap(searchtext, id) {
           app_id: "XWlu7av4mIl9LiVOkizU",
           app_code: "SWPg1es3nHq226fb1B6DMQ"
         },
-        success: function (data) {
+        success: function(data) {
           var address = JSON.stringify(data);
           //console.log("address: ", address);
           var currentAddress = data.Response.View[0].Result[0].Location.Address;
@@ -277,11 +261,11 @@ function geocodemap(searchtext, id) {
             dataType: "json",
             contentType: "application/json",
             timeout: 10000,
-            success: function (data) {
+            success: function(data) {
               console.log(" - data: ");
               console.log(data);
             },
-            error: function (data) {
+            error: function(data) {
               alert("error");
             }
           });
@@ -300,7 +284,7 @@ function geocodemap(searchtext, id) {
   // as necessary
   map.addEventListener(
     "drag",
-    function (ev) {
+    function(ev) {
       var target = ev.target,
         pointer = ev.currentPointer;
       if (target instanceof mapsjs.map.Marker) {
@@ -324,14 +308,14 @@ function defaultClick(id) {
     url: "http://localhost:3000/apicaller/useraddress/" + id,
     // cache: false,
     timeout: 10000,
-    success: function (json) {
+    success: function(json) {
       console.log(json.searchtext);
       $("#google-map-api").empty();
       $("#panel").empty();
       geocodemap(json.searchtext, id);
       $("#google-map-api").load();
     },
-    error: function (data) {
+    error: function(data) {
       alert("error");
     }
   });
@@ -345,12 +329,12 @@ function requestDriver(id) {
     url: "http://localhost:3000/apicaller/getdriver/" + id,
     // cache: false,
     timeout: 1000000,
-    success: function (json) {
+    success: function(json) {
       console.log(json);
       coords1 = {
         lat: json.customer.Latitude,
         lng: json.customer.Longitude
-      }
+      };
       var driverdistance = [];
       var driverarr = [];
       var info = [];
@@ -372,7 +356,7 @@ function requestDriver(id) {
           distance: haversine,
           id: id,
           status: stt
-        }
+        };
 
         info.push(infodriver);
       }
@@ -386,13 +370,11 @@ function requestDriver(id) {
       var datasend = {
         listdiver: info,
         idcustomer: json.id
-      }
+      };
       console.log(datasend);
       socket.emit("client-getdriver-data", datasend);
-
-
     },
-    error: function (data) {
+    error: function(data) {
       alert("error");
     }
   });
@@ -405,16 +387,14 @@ function requestDriver(id) {
       for (var j = i - 1; j > -1 && items[j].distance > min; j--) {
         // loop through the items in the sorted array (the items from the current to the beginning)
         // copy each item to the next one
-        items[j + 1] = items[j]
+        items[j + 1] = items[j];
       }
       // the last item we've reached should now hold the value of the currently sorted item
-      items[j + 1] = value
+      items[j + 1] = value;
     }
 
-    return list
+    return list;
   }
-
-
 
   function haversineDistance(coords1, coords2) {
     function toRad(x) {
@@ -429,9 +409,9 @@ function requestDriver(id) {
     var a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(toRad(coords1.lat)) *
-      Math.cos(toRad(coords2.lat)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+        Math.cos(toRad(coords2.lat)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var dis = R * c;
 

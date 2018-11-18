@@ -82,7 +82,7 @@ router.get("/getdriver/:id", (req, res) => {
         searchtext: c.address
       };
 
-      hmAPI.geocode(geocodeParams, function (err, result) {
+      hmAPI.geocode(geocodeParams, function(err, result) {
         console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
 
         driverRepo
