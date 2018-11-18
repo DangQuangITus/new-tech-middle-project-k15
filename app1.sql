@@ -4,7 +4,7 @@ USE `app1`;
 --
 -- Host: 127.0.0.1    Database: app1
 -- ------------------------------------------------------
--- Server version	5.7.24-0ubuntu0.18.04.1
+-- Server version	5.7.24-0ubuntu0.16.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,6 +16,35 @@ USE `app1`;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `admin`
+--
+
+DROP TABLE IF EXISTS `admin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(45) NOT NULL,
+  `password` varchar(250) NOT NULL,
+  `firstname` varchar(45) DEFAULT NULL,
+  `lastname` varchar(45) DEFAULT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `status` varchar(15) DEFAULT 'active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin`
+--
+
+LOCK TABLES `admin` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES (1,'quangnd2','96e79218965eb72c92a549dd5a330112','quang','nguyen dang','0398424816','active'),(2,'quangnd2admin','96e79218965eb72c92a549dd5a330112','quang','nguyen dang ','111111','active');
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `customer`
@@ -43,7 +72,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'phuong','Ha Noi','0123456789','123/8 Le hong phong','located',NULL,NULL),(2,'quang','Ho chi minh','0123456789','Le hong phong','located',NULL,NULL),(10,'nguyen Dang quang','144 Âu cơ, tân bình, Hồ chí minh','0396424817','','located',NULL,NULL),(11,'','','','','located',NULL,'2018-11-10 00:00:00');
+INSERT INTO `customer` VALUES (1,'phuong','Ha Noi','0123456789','123/8 Le hong phong','2',NULL,NULL),(2,'quang','Ho chi minh','0123456789','Le hong phong','located',NULL,NULL),(10,'nguyen Dang quang','144 Âu cơ, tân bình, Hồ chí minh','0396424817','','located',NULL,NULL),(11,'','','','','located',NULL,'2018-11-10 00:00:00');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,14 +86,15 @@ DROP TABLE IF EXISTS `driver`;
 CREATE TABLE `driver` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
-  `password` varchar(45) NOT NULL,
+  `password` varchar(250) NOT NULL,
   `first_name` varchar(45) NOT NULL,
   `last_name` varchar(45) NOT NULL,
   `phone` decimal(10,0) NOT NULL,
   `location` varchar(100) DEFAULT NULL,
   `status` varchar(45) NOT NULL,
+  `socketid` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +103,7 @@ CREATE TABLE `driver` (
 
 LOCK TABLES `driver` WRITE;
 /*!40000 ALTER TABLE `driver` DISABLE KEYS */;
-INSERT INTO `driver` VALUES (1,'quang','2b10351253eed030812674e8aa18a5ab','Quang','Dang',133456,'{\"lat\":10.796236799999999,\"lng\":106.6819584}','undefined'),(2,'quang','2b10351253eed030812674e8aa18a5ab','Quang','Dang',123,NULL,'disable');
+INSERT INTO `driver` VALUES (14,'quangnd2','96e79218965eb72c92a549dd5a330112','quang','nguyen dang ',396424818,'{\"lat\":10.7548208,\"lng\":106.6851614}','disable',NULL);
 /*!40000 ALTER TABLE `driver` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,4 +124,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-17 15:58:38
+-- Dump completed on 2018-11-18 23:20:09
