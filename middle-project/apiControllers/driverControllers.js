@@ -1,7 +1,7 @@
 var express = require("express");
 var driverRepo = require("../repos/driverRepo");
 var bodyParser = require("body-parser");
-// var session = require("express-session");
+var session = require("express-session");
 var router = express.Router();
 var app = express();
 var status = require("../public/constants/statusdriver");
@@ -60,10 +60,9 @@ router.post("/login", (req, res) => {
           .then(rows => {
             console.log("update status: ", rows);
           });
+        req.session.user = rows[0].id;
         sessionstorage.setItem(rows[0].id, rows[0].username);
         console.log("login data: ", rows[0]);
-        res.id = rows[0].id;
-        console.log("res id: ", res.set);
         res.redirect("/apidriver");
       } else {
         res.redirect("/driver/login");
