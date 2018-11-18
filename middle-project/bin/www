@@ -61,6 +61,15 @@ io.sockets.on("connection", function (socket) {
   socket.on("client-getdriver-data", function (data) {
     console.log("server received client getdriver data: ", data);
     // xu ly send toi tung diver so luong gioi han la 3
+    var limit = 3;
+    for (i = 0; i < limit; i++) {
+      if (data.listdiver[i].status == "available") {
+        console.log(data.listdiver[i].id);
+        // gui toi tung tai xe cho den khi nao nhan dk 
+        //socket.emit("server-send-book-grap", { data: rows });
+
+      }
+    }
   });
 
   socket.on("client-send-data", function (data) {

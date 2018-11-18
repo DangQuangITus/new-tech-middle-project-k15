@@ -382,6 +382,7 @@ function requestDriver(id) {
       insertionSortDriver(info);
       console.log(info);
 
+      // truyen them socket id cua driver
       var datasend = {
         listdiver: info,
         idcustomer: json.id
