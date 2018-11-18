@@ -11,8 +11,7 @@ var sessionstorage = require("sessionstorage");
 // session.startSession(req, res, callback);
 var sessionChecker = (req, res, next) => {
   if (req.cookies.user_sid && req.session.user) {
-    // res.render("driverindex", { title: "Driver Index page" });
-    res.redirect("/apidriver");
+    res.render("driver", {title: "Driver Index page"});
   } else {
     next();
   }
@@ -23,7 +22,7 @@ router.get("/", sessionChecker, (req, res) => {
 });
 
 // Register
-router.get("/register", sessionChecker, function(req, res, next) {
+router.get("/register", sessionChecker, function (req, res, next) {
   res.render("driverregister", {
     title: "Driver register form"
   });
@@ -31,16 +30,16 @@ router.get("/register", sessionChecker, function(req, res, next) {
 
 router.post("/register", (req, res) => {
   driverRepo
-    .add(req.body)
-    .then(value => {
-      res.statusCode = 201;
-      res.redirect("/driver/login");
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
-    });
+  .add(req.body)
+  .then(value => {
+    res.statusCode = 201;
+    res.redirect("/driver/login");
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 // Login
@@ -52,113 +51,115 @@ router.get("/login", sessionChecker, (req, res) => {
 
 router.post("/login", (req, res) => {
   driverRepo
-    .login(req.body)
-    .then(rows => {
-      if (rows.length > 0) {
-        driverRepo
-          .changeDriverStatus(status.available, rows[0].username)
-          .then(rows => {
-            console.log("update status: ", rows);
-          });
-        req.session.user = rows[0].id;
-        sessionstorage.setItem(rows[0].id, rows[0].username);
-        console.log("login data: ", rows[0]);
-        res.redirect("/apidriver");
-      } else {
-        res.redirect("/driver/login");
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
-    });
+  .login(req.body)
+  .then(rows => {
+    if (rows.length > 0) {
+      driverRepo
+      .changeDriverStatus(status.available, rows[0].username)
+      .then(rows => {
+        console.log("update status: ", rows);
+      });
+      req.session.user = rows[0].id;
+      sessionstorage.setItem(rows[0].id, rows[0].username);
+      console.log("login data: ", rows[0]);
+      res.redirect("/driver");
+    } else {
+      res.redirect("/driver/login");
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
+// Location
 router.get("/location", (req, res) => {
   driverRepo
-    .get_location(req.session.user)
-    .then(rows => {
-      var coord = {};
-      if (rows.length) {
-        coord = rows[0].location;
-      }
-      res.json({
-        coord: coord
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
+  .get_location(req.session.user)
+  .then(rows => {
+    var coord = {};
+    if (rows.length) {
+      coord = rows[0].location;
+      console.log("User GET Location: ", rows[0].location);
+    }
+    res.json({
+      coord: JSON.parse(coord)
     });
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 router.put("/location", (req, res) => {
   driverRepo
-    .update_location(req.session.user, req.body.location)
-    .then(rows => {
-      res.json({
-        msg: "Updated location"
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
+  .update_location(req.session.user, req.body.location)
+  .then(rows => {
+    res.json({
+      msg: "Updated location to " + JSON.stringify(req.body.location)
     });
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 router.get("/status", (req, res) => {
   driverRepo
-    .get_status(req.session.user)
-    .then(rows => {
-      var status = "";
-      if (rows.length) {
-        status = rows;
-      }
-      console.log(status);
-      res.json({
-        status: status
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
+  .get_status(req.session.user)
+  .then(rows => {
+    var status = "";
+    if (rows.length) {
+      status = rows;
+    }
+    console.log(status);
+    res.json({
+      status: status
     });
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 router.put("/status", (req, res) => {
   driverRepo
-    .get_location(req.session.user)
-    .then(rows => {
-      if (rows.length) {
-        var current_status = rows[0].status;
-
-        if (current_status === "disable") current_status = "ready";
-        else if (current_status === "ready") current_status = "busy";
-        else if (current_status === "busy") current_status = "disable";
-
-        driverRepo
-          .update_status(req.session.user, current_status)
-          .then(rows => {
-            res.json({
-              msg: "Updated status"
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            res.statusCode = 500;
-            res.end("View error log on console");
-          });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
-    });
+  .get_location(req.session.user)
+  .then(rows => {
+    if (rows.length) {
+      var current_status = rows[0].status;
+      
+      if (current_status === "disable") current_status = "ready";
+      else if (current_status === "ready") current_status = "busy";
+      else if (current_status === "busy") current_status = "disable";
+      
+      driverRepo
+      .update_status(req.session.user, current_status)
+      .then(rows => {
+        res.json({
+          msg: "Updated status"
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+      });
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 // route for user logout
