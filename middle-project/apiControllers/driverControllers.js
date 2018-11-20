@@ -146,34 +146,17 @@ router.get("/status", (req, res) => {
 
 router.put("/status", (req, res) => {
   driverRepo
-    .get_location(req.session.user)
-    .then(rows => {
-      if (rows.length) {
-        var current_status = rows[0].status;
-
-        if (current_status === "disable") current_status = "ready";
-        else if (current_status === "ready") current_status = "busy";
-        else if (current_status === "busy") current_status = "disable";
-
-        driverRepo
-          .update_status(req.session.user, current_status)
-          .then(rows => {
-            res.json({
-              msg: "Updated status"
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            res.statusCode = 500;
-            res.end("View error log on console");
-          });
-      }
+  .update_status(req.session.user, req.body.status)
+  .then(rows => {
+    res.json({
+      msg: "Updated status to " + req.body.status
     })
-    .catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end("View error log on console");
-    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.statusCode = 500;
+    res.end("View error log on console");
+  });
 });
 
 // route for user logout
