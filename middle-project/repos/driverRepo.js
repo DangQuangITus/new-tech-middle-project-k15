@@ -46,11 +46,18 @@ exports.update_location = (driver_id, driver_location) => {
   return db.save(sql);
 };
 
+exports.update_socketid = (driver_id, socketid) => {
+  var sql = `update driver set socketid = '${socketid}' where id = '${driver_id}'`;
+  return db.save(sql);
+};
 exports.get_status = driver_id => {
   var sql = `select status from driver where id = '${driver_id}'`;
   return db.load(sql);
 };
-
+exports.get_socketid = driver_id => {
+  var sql = `select socketid from driver where id = '${driver_id}'`;
+  return db.load(sql);
+};
 exports.update_status = (driver_id, driver_status) => {
   var sql = `update driver set status = '${driver_status}' where id = '${driver_id}'`;
   return db.save(sql);

@@ -368,7 +368,7 @@ function requestDriver(id) {
 
       // truyen them socket id cua driver
       var datasend = {
-        listdiver: info,
+        listdriver: info,
         idcustomer: json.id
       };
       console.log(datasend);

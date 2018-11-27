@@ -10,12 +10,11 @@ var sessionstorage = require("sessionstorage");
 
 // session.startSession(req, res, callback);
 var sessionChecker = (req, res, next) => {
-  console.log("check session");
   console.log(
     "to driver page: " + req.cookies.user_sid + " - " + req.session.user
   );
   if (req.cookies.user_sid && req.session.user) {
-    res.render("driver", { title: "Driver Index page" });
+    res.render("driver", { title: "Driver Index page", id: req.session.user });
   } else {
     next();
   }
@@ -57,7 +56,9 @@ router.get("/login", (req, res) => {
   if (req.cookies.user_sid && req.session.user) {
     res.redirect("/driver");
   } else {
-    res.render("driverlogin", { title: "Driver login form" });
+    res.render("driverlogin", {
+      title: "Driver login form"
+    });
   }
 });
 
@@ -146,17 +147,17 @@ router.get("/status", (req, res) => {
 
 router.put("/status", (req, res) => {
   driverRepo
-  .update_status(req.session.user, req.body.status)
-  .then(rows => {
-    res.json({
-      msg: "Updated status to " + req.body.status
+    .update_status(req.session.user, req.body.status)
+    .then(rows => {
+      res.json({
+        msg: "Updated status to " + req.body.status
+      });
     })
-  })
-  .catch(err => {
-    console.log(err);
-    res.statusCode = 500;
-    res.end("View error log on console");
-  });
+    .catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end("View error log on console");
+    });
 });
 
 // route for user logout

@@ -74,10 +74,11 @@ router.get("/getdriver/:id", (req, res) => {
   // console.log("req la: ", req.params);
   var id = req.params.id;
   customerRepo.single(id).then(c => {
+    // get customer by id
     var drivers;
     var customerPosition;
     if (c) {
-      console.log(c.address);
+      console.log(c.address); // customer address
       var geocodeParams = {
         searchtext: c.address
       };

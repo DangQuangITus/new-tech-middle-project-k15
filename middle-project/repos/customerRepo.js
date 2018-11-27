@@ -13,21 +13,25 @@ exports.geneId = () => {
 };
 
 exports.loadAll = () => {
-  var query = "SELECT id, name, address, phone, notes, status,"
-    + "CASE"
-    + " WHEN status = 1 THEN 'not locate' "
-    + " WHEN status = 2 THEN 'located'"
-    + " WHEN status = 3 THEN 'have driver'"
-    + " WHEN status = 4 THEN 'moving'"
-    + " WHEN status = 5 THEN 'completed'"
-    + " END as status1,"
-    + " reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y %H:%i:%S') as date FROM customer order by status asc, createddate desc";
+  var query =
+    "SELECT id, name, address, phone, notes, status," +
+    "CASE" +
+    " WHEN status = 1 THEN 'not locate' " +
+    " WHEN status = 2 THEN 'located'" +
+    " WHEN status = 3 THEN 'have driver'" +
+    " WHEN status = 4 THEN 'moving'" +
+    " WHEN status = 5 THEN 'completed'" +
+    " END as status1," +
+    " reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y %H:%i:%S') as date FROM customer order by status asc, createddate desc";
   return db.load(query);
 };
 
 exports.single = id => {
   return new Promise((resolve, reject) => {
-    var query = "SELECT id, name, address, phone, notes, status,reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y') as date FROM customer WHERE id = " + id + "";
+    var query =
+      "SELECT id, name, address, phone, notes, status,reversegeocoding, DATE_FORMAT(createddate, '%d/%m/%Y') as date FROM customer WHERE id = " +
+      id +
+      "";
     db.load(query)
       .then(rows => {
         //console.log(rows);
@@ -62,15 +66,20 @@ exports.add = (name, address, sdt, note, status, createddate) => {
   return db.save(query);
 };
 
-
 exports.updateStatus = (status, id) => {
-  var sql = "UPDATE `customer` SET `status`='" + status + "' WHERE `id`='" + id + "'";
+  var sql =
+    "UPDATE `customer` SET `status`='" + status + "' WHERE `id`='" + id + "'";
 
   return db.save(sql);
-}
+};
 
 exports.updateAddressNew = (reversegeocoding, id) => {
-  var sql = "UPDATE `customer` SET `reversegeocoding`='" + reversegeocoding + "' WHERE `id`='" + id + "'";
+  var sql =
+    "UPDATE `customer` SET `reversegeocoding`='" +
+    reversegeocoding +
+    "' WHERE `id`='" +
+    id +
+    "'";
 
   return db.save(sql);
-}
+};
