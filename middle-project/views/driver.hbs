@@ -9,12 +9,12 @@
   $(document).ready(function () {
     var socket = io("http://localhost:3000/driver");
     console.log("id is loging: ", {{ id }});
-  var id = {{ id }};
-  socket.emit('driver-connected', id);
-  socket.on('request-car', function (data) {
-    console.log('yeu cau dat xe da duoc nhan');
+    var id = {{ id }};
+    socket.emit('driver-connected', id);
+    socket.on('request-car', function (data) {
+      console.log('yeu cau dat xe da duoc nhan');
 
-  });
+    });
   })
 </script>
 
@@ -23,11 +23,13 @@
 <nav class="navbar navbar-expand-lg navbar-default fixed-top" id="mainNav">
   <div class="container">
     <a class="navbar-brand js-scroll-trigger" href="#page-top">
-      <img class="rounded-circle img-fluid" style="width:45px; height:45px; display: inline-block;" src="img/logos/logo.png"
-        alt="">GRAP BIKE
+      <img class="rounded-circle img-fluid" style="width:45px; height:45px; display: inline-block;"
+           src="img/logos/logo.png"
+           alt="">GRAP BIKE
     </a>
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-      aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarResponsive"
+            aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       Menu
       <i class="fas fa-bars"></i>
     </button>
@@ -46,8 +48,9 @@
           <a class="nav-link js-scroll-trigger" href="#team">Nhóm</a>
         </li> --}}
         <li class="nav-item " style="float: right;">
-          <a id="driverlogout" href="/driver/logout" class="nav-link btn btn-danger btn-dark btn-outline-success btn-round js-scroll-trigger"
-            role="button">Logout</a>
+          <a id="driverlogout" href="/driver/logout"
+             class="nav-link btn btn-danger btn-dark btn-outline-success btn-round js-scroll-trigger"
+             role="button">Logout</a>
         </li>
       </ul>
     </div>
@@ -64,15 +67,15 @@
     </div>
   </div>
 </header>
-<hr />
+<hr/>
 <div class="row">
   <div class="col-lg-12 text-center">
     <h2 class="section-heading text-uppercase">Bản đồ</h2>
   </div>
-</div><br />
+</div><br/>
 {{!--
 <div id="map-driver" style="width: 80%; height: 500px; background: grey; margin:auto;" /> --}}
-<link rel="stylesheet" type="text/css" href="css/switch.css" />
+<link rel="stylesheet" type="text/css" href="css/switch.css"/>
 <div class="row">
   <div class="col-sm-1 col-md-1"></div>
   <div class="col-sm-10 col-md-10">
@@ -81,11 +84,21 @@
       </div>
     </div>
     <br>
-    <h3 id="driverStatus">Disable</h3>
-    <label class="switch">
-      <input type="checkbox" name="inputDriverStatus" onchange="onchangeStatusCheckbox(this)" />
-      <span class="slider round"></span>
-    </label>
+    <div class="col-sm-2 col-md-2">
+      <div class="row">
+        <h3 id="driverStatus">Disable</h3>
+      </div>
+      <div class="row">
+        <label class="switch">
+          <input type="checkbox" name="inputDriverStatus" onchange="onchangeStatusCheckbox(this)"/>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    <div class="col-sm-2 col-md-2">
+      <button id="driverStart" type="button" onclick="startDrive()" class="btn btn-primary"
+              style="display: none"></button>
+    </div>
   </div>
 </div>
 <script type="text/javascript" src="/javascripts/driverjs.js"></script>
@@ -508,24 +521,24 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input class="form-control" id="name" type="text" placeholder="Tên *" required="required"
-                  data-validation-required-message="Mời bạn nhập tên.">
+                       data-validation-required-message="Mời bạn nhập tên.">
                 <p class="help-block text-danger"></p>
               </div>
               <div class="form-group">
                 <input class="form-control" id="email" type="email" placeholder="Email *" required="required"
-                  data-validation-required-message="Mời bạn nhập địa chỉ email.">
+                       data-validation-required-message="Mời bạn nhập địa chỉ email.">
                 <p class="help-block text-danger"></p>
               </div>
               <div class="form-group">
                 <input class="form-control" id="phone" type="tel" placeholder="Số điện thoại *" required="required"
-                  data-validation-required-message="Mời bạn nhập số điện thoại.">
+                       data-validation-required-message="Mời bạn nhập số điện thoại.">
                 <p class="help-block text-danger"></p>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <textarea class="form-control" id="message" placeholder="ghi chú *" required="required"
-                  data-validation-required-message="Ghi chú."></textarea>
+                          data-validation-required-message="Ghi chú."></textarea>
                 <p class="help-block text-danger"></p>
               </div>
             </div>
