@@ -67,13 +67,11 @@ router.post("/login", (req, res) => {
     .login(req.body)
     .then(rows => {
       if (rows.length > 0) {
-        if (rows[0].status === status.disable) {
-          driverRepo
-            .changeDriverStatus(status.available, rows[0].username)
-            .then(rows => {
-              console.log("update status: ", rows);
-            });
-        }
+        driverRepo
+          .changeDriverStatus(status.available, rows[0].username)
+          .then(rows => {
+            console.log("update status: ", rows);
+          });
         req.session.user = rows[0].id;
         sessionstorage.setItem(rows[0].id, rows[0].username);
         console.log("login data: ", req.cookies.user_sid);

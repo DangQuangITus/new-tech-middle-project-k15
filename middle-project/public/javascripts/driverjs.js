@@ -1,4 +1,4 @@
-$("#driver_register").click(function () {
+$("#driver_register").click(function() {
   var phone = $("#driver_phone").val();
 
   if (isNaN(phone)) {
@@ -15,7 +15,7 @@ $("#driver_register").click(function () {
   }
 });
 
-$("#add_admin").click(function () {
+$("#add_admin").click(function() {
   var phone = $("#admin_phone").val();
 
   if (isNaN(phone)) {
@@ -40,13 +40,13 @@ function showMap(lat, lng) {
    * Boilerplate map initialization code starts below:
    */
 
-    //Step 1: initialize communication with the platform
+  //Step 1: initialize communication with the platform
   var platform = new H.service.Platform({
-      app_id: "XWlu7av4mIl9LiVOkizU",
-      app_code: "SWPg1es3nHq226fb1B6DMQ",
-      useCIT: true,
-      useHTTPS: true
-    });
+    app_id: "XWlu7av4mIl9LiVOkizU",
+    app_code: "SWPg1es3nHq226fb1B6DMQ",
+    useCIT: true,
+    useHTTPS: true
+  });
   var defaultLayers = platform.createDefaultLayers();
 
   //Step 2: initialize a map - this map is centered over California
@@ -54,7 +54,7 @@ function showMap(lat, lng) {
     document.getElementById("map-driver"),
     defaultLayers.normal.map,
     {
-      center: {lat: lat, lng: lng},
+      center: { lat: lat, lng: lng },
       zoom: 20
     }
   );
@@ -68,7 +68,7 @@ function showMap(lat, lng) {
   // Create the default UI components
   var ui = H.ui.UI.createDefault(map, defaultLayers);
 
-  map.addEventListener("tap", function (evt) {
+  map.addEventListener("tap", function(evt) {
     getLocation();
     console.log("Location: ", current_location);
 
@@ -90,7 +90,7 @@ function showMap(lat, lng) {
   return map;
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
   map = showMap(10.832142, 106.645863);
 
   if (navigator.geolocation) {
@@ -102,7 +102,7 @@ $(document).ready(function () {
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
 
-    coord = {lat: lat, lng: lng};
+    coord = { lat: lat, lng: lng };
 
     marker = new H.map.Marker(coord);
     map.addObject(marker);
@@ -118,7 +118,7 @@ $(document).ready(function () {
   console.log("Status", status);
 });
 
-$("#updateDriverLocation").click(function () {
+$("#updateDriverLocation").click(function() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
   }
@@ -128,7 +128,7 @@ $("#updateDriverLocation").click(function () {
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
 
-    coord = {lat: lat, lng: lng};
+    coord = { lat: lat, lng: lng };
 
     var centerMarker = new H.map.Marker(coord);
     map.addObject(centerMarker);
@@ -154,9 +154,9 @@ function haversineDistance(coords1, coords2) {
   var a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(coords1.lat)) *
-    Math.cos(toRad(coords2.lat)) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
+      Math.cos(toRad(coords2.lat)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var dis = R * c;
 
@@ -170,10 +170,10 @@ function getLocation() {
     contentType: "application/json",
     url: "http://localhost:3000/driver/location",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       current_location = data.coord;
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax get location failed");
     }
   });
@@ -184,14 +184,14 @@ function updateLocation(location) {
   $.ajax({
     type: "PUT",
     dataType: "json",
-    data: JSON.stringify({location: location}),
+    data: JSON.stringify({ location: location }),
     contentType: "application/json",
     url: "http://localhost:3000/driver/location",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       console.log(data);
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax update location failed");
     }
   });
@@ -204,10 +204,10 @@ function getStatus() {
     contentType: "application/json",
     url: "http://localhost:3000/driver/status",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       return data.status;
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax get status failed");
     }
   });
@@ -219,44 +219,44 @@ function updateDriverStatus(status) {
   $.ajax({
     type: "PUT",
     dataType: "json",
-    data: JSON.stringify({status: status}),
+    data: JSON.stringify({ status: status }),
     contentType: "application/json",
     url: "http://localhost:3000/driver/status",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       console.log(data);
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax update status failed");
     }
   });
-};
+}
 
 function onchangeStatusCheckbox(sender) {
   if (sender.checked) {
     status = "Ready";
-    $('#driverStart').text('Begin');
+    $("#driverStart").text("Begin");
     $("#driverStart").show();
   } else {
     status = "Disable";
     $("#driverStart").hide();
   }
   $("#driverStatus").text(status);
-  updateDriverStatus(status.toLowerCase())
+  updateDriverStatus(status.toLowerCase());
 }
 
 function startDrive() {
-  btnTitle = $('#driverStart').text();
+  btnTitle = $("#driverStart").text();
 
-  if (btnTitle === 'Begin') {
-    $('#driverStart').text('End');
-    status = 'Busy';
+  if (btnTitle === "Begin") {
+    $("#driverStart").text("End");
+    status = "Busy";
     $("#driverStatus").text(status);
-    updateDriverStatus(status.toLowerCase())
+    updateDriverStatus(status.toLowerCase());
   } else {
-    $('#driverStart').text('Begin');
-    status = 'Ready';
+    $("#driverStart").text("Begin");
+    status = "Ready";
     $("#driverStatus").text(status);
-    updateDriverStatus(status.toLowerCase())
+    updateDriverStatus(status.toLowerCase());
   }
 }

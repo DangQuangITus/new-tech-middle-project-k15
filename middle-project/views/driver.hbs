@@ -1,163 +1,373 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
 <script>
 
-  var csocket = io("http://localhost:3000/admin");
-  csocket.on('request-car', function (data) {
-    console.log('yeu cau dat xe da duoc nhan');
-  });
 
+  var driver = io("http://localhost:3000/driver");
+  var id = {{ id }};
+
+  driver.on("request-car", function (data) {
+    console.log('yeu cau dat xe da duoc nhan', (data));
+    //console.log("check id: ", id);
+    if (id === data.driver.id) {
+
+      $("#driver-alert").show();
+      $("#map-driver-client").show();
+
+      var html = "<p>Tên khách hàng:" + data.customername
+        + "</p> <p>Khoảng cách đến khách hàng: "
+        + data.driver.distance + "m</p><br/><button type='button' class='btn btn-success'>Đồng ý</button> &#160;<button type='button' class='btn btn-success'>Hủy</button>";
+
+
+      $("#expand-customer").append(html);
+
+      function calculateRouteFromAtoB(platform) {
+        var router = platform.getRoutingService(),
+          routeRequestParams = {
+            mode: 'fastest;car',
+            representation: 'display',
+            routeattributes: 'waypoints,summary,shape,legs',
+            maneuverattributes: 'direction,action',
+            waypoint0: data.driver.coords.lat + ',' + data.driver.coords.lng,// '52.5160,13.3779', // Brandenburg Gate
+            waypoint1: data.postionCustomer.lat + ',' + data.postionCustomer.lng//'52.5206,13.3862'  // Friedrichstraße Railway Station
+          };
+
+        router.calculateRoute(
+          routeRequestParams,
+          onSuccess,
+          onError
+        );
+      }
+      function onSuccess(result) {
+        var route = result.response.route[0];
+        addRouteShapeToMap(route);
+        addManueversToMap(route);
+
+        addWaypointsToPanel(route.waypoint);
+        addManueversToPanel(route);
+        addSummaryToPanel(route.summary);
+        // ... etc.
+      }
+      function onError(error) {
+        alert('Ooops!');
+      }
+
+      // set up containers for the map  + panel
+      var mapContainer = document.getElementById('map-driver-client'),
+        routeInstructionsContainer = document.getElementById('modal-panel');
+      //Step 1: initialize communication with the platform
+      var platform = new H.service.Platform({
+        app_id: 'devportal-demo-20180625',
+        app_code: '9v2BkviRwi9Ot26kp2IysQ',
+        useHTTPS: true
+      });
+      var pixelRatio = window.devicePixelRatio || 1;
+      var defaultLayers = platform.createDefaultLayers({
+        tileSize: pixelRatio === 1 ? 256 : 512,
+        ppi: pixelRatio === 1 ? undefined : 320
+      });
+
+      //Step 2: initialize a map - this map is centered over Berlin
+      var map = new H.Map(mapContainer,
+        defaultLayers.normal.map, {
+          center: { lat: 52.5160, lng: 13.3779 },
+          zoom: 13,
+          pixelRatio: pixelRatio
+        });
+
+      //Step 3: make the map interactive
+      // MapEvents enables the event system
+      // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+      // Create the default UI components
+      var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+      // Hold a reference to any infobubble opened
+      var bubble;
+
+      /**
+       * Opens/Closes a infobubble
+       * @param  {H.geo.Point} position     The location on the map.
+       * @param  {String} text              The contents of the infobubble.
+       */
+      function openBubble(position, text) {
+        if (!bubble) {
+          bubble = new H.ui.InfoBubble(
+            position,
+            // The FO property holds the province name.
+            { content: text });
+          ui.addBubble(bubble);
+        } else {
+          bubble.setPosition(position);
+          bubble.setContent(text);
+          bubble.open();
+        }
+      }
+      /**
+       * Creates a H.map.Polyline from the shape of the route and adds it to the map.
+       * @param {Object} route A route as received from the H.service.RoutingService
+       */
+      function addRouteShapeToMap(route) {
+        var lineString = new H.geo.LineString(),
+          routeShape = route.shape,
+          polyline;
+
+        routeShape.forEach(function (point) {
+          var parts = point.split(',');
+          lineString.pushLatLngAlt(parts[0], parts[1]);
+        });
+
+        polyline = new H.map.Polyline(lineString, {
+          style: {
+            lineWidth: 4,
+            strokeColor: 'rgba(0, 128, 255, 0.7)'
+          }
+        });
+        // Add the polyline to the map
+        map.addObject(polyline);
+        // And zoom to its bounding rectangle
+        map.setViewBounds(polyline.getBounds(), true);
+      }
+
+
+      /**
+       * Creates a series of H.map.Marker points from the route and adds them to the map.
+       * @param {Object} route  A route as received from the H.service.RoutingService
+       */
+      function addManueversToMap(route) {
+        var svgMarkup = '<svg width="18" height="18" ' +
+          'xmlns="http://www.w3.org/2000/svg">' +
+          '<circle cx="8" cy="8" r="8" ' +
+          'fill="#1b468d" stroke="white" stroke-width="1"  />' +
+          '</svg>',
+          dotIcon = new H.map.Icon(svgMarkup, { anchor: { x: 8, y: 8 } }),
+          group = new H.map.Group(),
+          i,
+          j;
+
+        // Add a marker for each maneuver
+        for (i = 0; i < route.leg.length; i += 1) {
+          for (j = 0; j < route.leg[i].maneuver.length; j += 1) {
+            // Get the next maneuver.
+            maneuver = route.leg[i].maneuver[j];
+            // Add a marker to the maneuvers group
+            var marker = new H.map.Marker({
+              lat: maneuver.position.latitude,
+              lng: maneuver.position.longitude
+            },
+              { icon: dotIcon });
+            marker.instruction = maneuver.instruction;
+            group.addObject(marker);
+          }
+        }
+
+        group.addEventListener('tap', function (evt) {
+          map.setCenter(evt.target.getPosition());
+          openBubble(
+            evt.target.getPosition(), evt.target.instruction);
+        }, false);
+
+        // Add the maneuvers group to the map
+        map.addObject(group);
+      }
+
+
+      /**
+       * Creates a series of H.map.Marker points from the route and adds them to the map.
+       * @param {Object} route  A route as received from the H.service.RoutingService
+       */
+      function addWaypointsToPanel(waypoints) {
+
+        var nodeH3 = document.createElement('h3'),
+          waypointLabels = [],
+          i;
+
+        for (i = 0; i < waypoints.length; i += 1) {
+          waypointLabels.push(waypoints[i].label)
+        }
+
+        nodeH3.textContent = waypointLabels.join(' - ');
+
+        routeInstructionsContainer.innerHTML = '';
+        routeInstructionsContainer.appendChild(nodeH3);
+      }
+
+      /**
+       * Creates a series of H.map.Marker points from the route and adds them to the map.
+       * @param {Object} route  A route as received from the H.service.RoutingService
+       */
+      function addSummaryToPanel(summary) {
+        var summaryDiv = document.createElement('div'),
+          content = '';
+        content += '<b>Total distance</b>: ' + summary.distance + 'm. <br/>';
+        content += '<b>Travel Time</b>: ' + summary.travelTime.toMMSS() + ' (in current traffic)';
+
+
+        summaryDiv.style.fontSize = 'small';
+        summaryDiv.style.marginLeft = '5%';
+        summaryDiv.style.marginRight = '5%';
+        summaryDiv.innerHTML = content;
+        routeInstructionsContainer.appendChild(summaryDiv);
+      }
+
+      /**
+       * Creates a series of H.map.Marker points from the route and adds them to the map.
+       * @param {Object} route  A route as received from the H.service.RoutingService
+       */
+      function addManueversToPanel(route) {
+
+        var nodeOL = document.createElement('ol'),
+          i,
+          j;
+
+        nodeOL.style.fontSize = 'small';
+        nodeOL.style.marginLeft = '5%';
+        nodeOL.style.marginRight = '5%';
+        nodeOL.className = 'directions';
+
+        // Add a marker for each maneuver
+        for (i = 0; i < route.leg.length; i += 1) {
+          for (j = 0; j < route.leg[i].maneuver.length; j += 1) {
+            // Get the next maneuver.
+            maneuver = route.leg[i].maneuver[j];
+
+            var li = document.createElement('li'),
+              spanArrow = document.createElement('span'),
+              spanInstruction = document.createElement('span');
+
+            spanArrow.className = 'arrow ' + maneuver.action;
+            spanInstruction.innerHTML = maneuver.instruction;
+            li.appendChild(spanArrow);
+            li.appendChild(spanInstruction);
+
+            nodeOL.appendChild(li);
+          }
+        }
+
+        routeInstructionsContainer.appendChild(nodeOL);
+      }
+
+
+      Number.prototype.toMMSS = function () {
+        return Math.floor(this / 60) + ' minutes ' + (this % 60) + ' seconds.';
+      }
+
+      // Now use the map as required...
+      calculateRouteFromAtoB(platform);
+
+
+      $("#map-driver").hide();
+    }
+  });
 
   $(document).ready(function () {
     var socket = io("http://localhost:3000/driver");
     console.log("id is loging: ", {{ id }});
-    var id = {{ id }};
-    socket.emit('driver-connected', id);
-    socket.on('request-car', function (data) {
-      console.log('yeu cau dat xe da duoc nhan');
-
-    });
+  var id = {{ id }};
+  socket.emit('driver-connected', id);
   })
 </script>
+{{!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Large Modal</button>
+--}}
 
+
+{{!-- model ask request driver --}}
 
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-default fixed-top" id="mainNav">
   <div class="container">
     <a class="navbar-brand js-scroll-trigger" href="#page-top">
-      <img class="rounded-circle img-fluid" style="width:45px; height:45px; display: inline-block;"
-           src="img/logos/logo.png"
-           alt="">GRAP BIKE
+      <img class="rounded-circle img-fluid" style="width:45px; height:45px; display: inline-block;" src="img/logos/logo.png"
+        alt="">GRAP BIKE
     </a>
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-            data-target="#navbarResponsive"
-            aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+      aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       Menu
       <i class="fas fa-bars"></i>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav text-uppercase ml-auto">
-        {{!-- <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#services">Dịch vụ</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#about">Thông tin</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#team">Nhóm</a>
-        </li> --}}
         <li class="nav-item " style="float: right;">
-          <a id="driverlogout" href="/driver/logout"
-             class="nav-link btn btn-danger btn-dark btn-outline-success btn-round js-scroll-trigger"
-             role="button">Logout</a>
+          <a id="driverlogout" href="/driver/logout" class="nav-link btn btn-danger btn-dark btn-outline-success btn-round js-scroll-trigger"
+            role="button">Logout</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
+
 <!-- Header -->
 <header class="masthead">
   <div class="container">
     <div class="intro-text">
-      {{!-- <div class="intro-lead-in" style="color: black;">Chào mừng bạn đến với trang web của chúng tôi!</div>
-      <h4 style="color: black; font-size:30px;">Chúng tôi cung cấp dịch vụ tốt nhất</h4>
-      <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Tell Me More</a> --}}
     </div>
   </div>
 </header>
-<hr/>
+<hr />
+
+
 <div class="row">
-  <div class="col-lg-12 text-center">
+  <div class="col-lg-11 text-center">
+
+    <div class="row">
+      <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+      </div>
+      <div class="col-xs-11 col-sm-11 col-md-11 col-lg-11">
+        <div id="driver-alert" class="alert alert-danger" style="display: none;">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <strong>Thông báo từ hệ thống</strong>
+          <div> Có khách hàng mới đặt xe tới bạn...</div>
+        </div>
+        <div id="expand-customer" style="text-align: left;">
+        </div>
+      </div>
+    </div>
+
     <h2 class="section-heading text-uppercase">Bản đồ</h2>
+
   </div>
-</div><br/>
+
+  <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+
+  </div>
+
+</div><br />
 {{!--
 <div id="map-driver" style="width: 80%; height: 500px; background: grey; margin:auto;" /> --}}
-<link rel="stylesheet" type="text/css" href="css/switch.css"/>
+<link rel="stylesheet" type="text/css" href="css/switch.css" />
 <div class="row">
   <div class="col-sm-1 col-md-1"></div>
   <div class="col-sm-10 col-md-10">
     <div class="row">
       <div id="map-driver" style="width: 100%; height: 500px; margin:auto;" class="text-center">
       </div>
+      <div id="map-driver-client" style="width: 100%; height: 500px; margin:auto; display: none;" class="text-center">
+      </div>
     </div>
     <br>
-    <div class="col-sm-2 col-md-2">
-      <div class="row">
-        <h3 id="driverStatus">Disable</h3>
-      </div>
-      <div class="row">
-        <label class="switch">
-          <input type="checkbox" name="inputDriverStatus" onchange="onchangeStatusCheckbox(this)"/>
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-    <div class="col-sm-2 col-md-2">
-      <button id="driverStart" type="button" onclick="startDrive()" class="btn btn-primary"
-              style="display: none"></button>
-    </div>
   </div>
 </div>
+<div class="row">
+  <div class="col-sm-1 col-md-1"></div>
+
+  <div class="col-sm-2 col-md-2">
+    <h3 id="driverStatus">Ready</h3>
+    <label class="switch">
+      <input type="checkbox" checked name="inputDriverStatus" onchange="onchangeStatusCheckbox(this)" />
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div class="col-sm-2 col-md-2">
+    <button id="driverStart" type="button" onclick="startDrive()" class="btn btn-primary" style="display: none; margin-top: 60px;"></button>
+  </div>
+</div>
+{{!-- </div> --}}
 <script type="text/javascript" src="/javascripts/driverjs.js"></script>
-{{!--
-<script type="text/javascript" charset="UTF-8">
-
-  /**
-   * An event listener is added to listen to tap events on the map.
-   * Clicking on the map displays an alert box containing the latitude and longitude
-   * of the location pressed.
-   * @param  {H.Map} map      A HERE Map instance within the application
-   */
-  function setUpClickListener(map) {
-    // Attach an event listener to map display
-    // obtain the coordinates and display in an alert box.
-    map.addEventListener('tap', function (evt) {
-      var coord = map.screenToGeo(evt.currentPointer.viewportX,
-        evt.currentPointer.viewportY);
-      alert('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
-        ((coord.lat > 0) ? 'N' : 'S') +
-        ' ' + Math.abs(coord.lng.toFixed(4)) +
-        ((coord.lng > 0) ? 'E' : 'W'));
-    });
-  }
-
-
-
-  /**
-   * Boilerplate map initialization code starts below:
-   */
-
-  //Step 1: initialize communication with the platform
-  var platform = new H.service.Platform({
-    app_id: 'devportal-demo-20180625',
-    app_code: '9v2BkviRwi9Ot26kp2IysQ',
-    useHTTPS: true
-  });
-  var pixelRatio = window.devicePixelRatio || 1;
-  var defaultLayers = platform.createDefaultLayers({
-    tileSize: pixelRatio === 1 ? 256 : 512,
-    ppi: pixelRatio === 1 ? undefined : 320
-  });
-
-  //Step 2: initialize a map
-  var map = new H.Map(document.getElementById('map-driver'),
-    defaultLayers.normal.map, {
-      center: { lat: 30.94625288456589, lng: -54.10861860580418 },
-      zoom: 1,
-      pixelRatio: pixelRatio
-    });
-
-  //Step 3: make the map interactive
-  // MapEvents enables the event system
-  // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
-  var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-
-  setUpClickListener(map);
-</script> --}}
-<!-- Services -->
 <section id="services">
   <div class="container">
     <div class="row">
@@ -197,10 +407,34 @@
     </div>
   </div>
 </section>
-
+{{!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#request-modal">
+  Launch demo modal
+</button> --}}
+<!-- Modal -->
+{{!-- <div class="modal fade" id="request-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div> --}}
 <!-- Portfolio Grid -->
 <section class="bg-light" id="portfolio">
   <div class="container">
+
     <div class="row">
       <div class="col-lg-12 text-center">
         <h2 class="section-heading text-uppercase">Portfolio</h2>
@@ -296,186 +530,6 @@
   </div>
 </section>
 
-<!-- About -->
-{{!-- <section id="about">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase">About</h2>
-        <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <ul class="timeline">
-          <li>
-            <div class="timeline-image">
-              <img class="rounded-circle img-fluid" src="img/about/1.jpg" alt="">
-            </div>
-            <div class="timeline-panel">
-              <div class="timeline-heading">
-                <h4>2009-2011</h4>
-                <h4 class="subheading">Our Humble Beginnings</h4>
-              </div>
-              <div class="timeline-body">
-                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum
-                  eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt
-                  et ea quo dolore laudantium consectetur!</p>
-              </div>
-            </div>
-          </li>
-          <li class="timeline-inverted">
-            <div class="timeline-image">
-              <img class="rounded-circle img-fluid" src="img/about/2.jpg" alt="">
-            </div>
-            <div class="timeline-panel">
-              <div class="timeline-heading">
-                <h4>March 2011</h4>
-                <h4 class="subheading">An Agency is Born</h4>
-              </div>
-              <div class="timeline-body">
-                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum
-                  eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt
-                  et ea quo dolore laudantium consectetur!</p>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="timeline-image">
-              <img class="rounded-circle img-fluid" src="img/about/3.jpg" alt="">
-            </div>
-            <div class="timeline-panel">
-              <div class="timeline-heading">
-                <h4>December 2012</h4>
-                <h4 class="subheading">Transition to Full Service</h4>
-              </div>
-              <div class="timeline-body">
-                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum
-                  eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt
-                  et ea quo dolore laudantium consectetur!</p>
-              </div>
-            </div>
-          </li>
-          <li class="timeline-inverted">
-            <div class="timeline-image">
-              <img class="rounded-circle img-fluid" src="img/about/4.jpg" alt="">
-            </div>
-            <div class="timeline-panel">
-              <div class="timeline-heading">
-                <h4>July 2014</h4>
-                <h4 class="subheading">Phase Two Expansion</h4>
-              </div>
-              <div class="timeline-body">
-                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum
-                  eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt
-                  et ea quo dolore laudantium consectetur!</p>
-              </div>
-            </div>
-          </li>
-          <li class="timeline-inverted">
-            <div class="timeline-image">
-              <h4>Be Part
-                <br>Of Our
-                <br>Story!</h4>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section> --}}
-
-<!-- Team -->
-{{!-- <section class="bg-light" id="team">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase">Our Amazing Team</h2>
-        <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-4">
-        <div class="team-member">
-          <img class="mx-auto rounded-circle" src="img/team/1.jpg" alt="">
-          <h4>Kay Garland</h4>
-          <p class="text-muted">Lead Designer</p>
-          <ul class="list-inline social-buttons">
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="team-member">
-          <img class="mx-auto rounded-circle" src="img/team/2.jpg" alt="">
-          <h4>Larry Parker</h4>
-          <p class="text-muted">Lead Marketer</p>
-          <ul class="list-inline social-buttons">
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="team-member">
-          <img class="mx-auto rounded-circle" src="img/team/3.jpg" alt="">
-          <h4>Diana Pertersen</h4>
-          <p class="text-muted">Lead Developer</p>
-          <ul class="list-inline social-buttons">
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-8 mx-auto text-center">
-        <p class="large text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam
-          veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p>
-      </div>
-    </div>
-  </div>
-</section> --}}
 
 <!-- Clients -->
 <section class="py-5">
@@ -521,24 +575,24 @@
             <div class="col-md-6">
               <div class="form-group">
                 <input class="form-control" id="name" type="text" placeholder="Tên *" required="required"
-                       data-validation-required-message="Mời bạn nhập tên.">
+                  data-validation-required-message="Mời bạn nhập tên.">
                 <p class="help-block text-danger"></p>
               </div>
               <div class="form-group">
                 <input class="form-control" id="email" type="email" placeholder="Email *" required="required"
-                       data-validation-required-message="Mời bạn nhập địa chỉ email.">
+                  data-validation-required-message="Mời bạn nhập địa chỉ email.">
                 <p class="help-block text-danger"></p>
               </div>
               <div class="form-group">
                 <input class="form-control" id="phone" type="tel" placeholder="Số điện thoại *" required="required"
-                       data-validation-required-message="Mời bạn nhập số điện thoại.">
+                  data-validation-required-message="Mời bạn nhập số điện thoại.">
                 <p class="help-block text-danger"></p>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <textarea class="form-control" id="message" placeholder="ghi chú *" required="required"
-                          data-validation-required-message="Ghi chú."></textarea>
+                  data-validation-required-message="Ghi chú."></textarea>
                 <p class="help-block text-danger"></p>
               </div>
             </div>
@@ -831,3 +885,6 @@
 
 <!-- Custom scripts for this template -->
 <script src="/javascripts/agency.min.js"></script> --}}
+
+{{!-- <div id="modal-map" style="width:49%; height:100%; background:grey"></div> --}}
+<div id="modal-panel" style="width:49%; left:51%; height:100%; background:inherit"></div>

@@ -326,18 +326,20 @@ function requestDriver(id) {
   $.ajax({
     type: "GET",
     contentType: "application/json",
-    url: "http://localhost:3000/apicaller/getdriver/" + id,
+    url: "http://localhost:3000/apicaller/getdriver/" + id, // get list driver available - customer position - customer id
     // cache: false,
     timeout: 1000000,
     success: function(json) {
       console.log(json);
       coords1 = {
+        // get postion customer
         lat: json.customer.Latitude,
         lng: json.customer.Longitude
       };
       var driverdistance = [];
       var driverarr = [];
       var info = [];
+      //sort list driver lastest customer
       for (i = 0; i < json.drivers.length; i++) {
         coords2 = {
           lat: JSON.parse(json.drivers[i].location).lat,
@@ -368,8 +370,13 @@ function requestDriver(id) {
 
       // truyen them socket id cua driver
       var datasend = {
-        listdriver: info,
-        idcustomer: json.id
+        listdriver: info, // sorted
+        idcustomer: json.id, // id customer
+        idName: json.cusName, // customer
+        postionCustomer: {
+          lat: json.customer.Latitude,
+          lng: json.customer.Longitude
+        }
       };
       console.log(datasend);
       socket.emit("client-getdriver-data", datasend);

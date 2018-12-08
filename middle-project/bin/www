@@ -61,28 +61,41 @@ io.sockets.on("connection", function(socket) {
     socket.broadcast.emit("server-send-data", data);
   });
 
+  //server received request book bike with infor list driver and id customer
   socket.on("client-getdriver-data", function(data) {
     console.log("server received client getdriver data: ", data);
-    // xu ly send toi tung diver so luong gioi han la 3
+    // xu ly send toi tung diver so luong gioi han la 3 ( test)
     var limit = data.listdriver.length > 3 ? 3 : data.listdriver.length;
     for (i = 0; i < limit; i++) {
-      console.log("driver " + i + " " + data.listdriver[i].status);
+      console.log("driver " + i + " " + data.listdriver[i].status); // status of driver
       if (data.listdriver[i].status === statusdriver.available) {
+        // if driver is available
+        var curdata = data.listdriver[i];
         driverRepo
-          .get_socketid(data.listdriver[i].id)
+          .get_socketid(data.listdriver[i].id) // get id socket of driver i
           .then(rows => {
             // nếu có địa chỉ socket tức đang online thì gửi request
-            console.log("got: ", rows[0].socketid);
+            console.log("server got id socket driver: ", rows[0].socketid);
+
             // gui toi tung tai xe cho den khi nao nhan dk
-            socket
-              .to(rows[0].socketid)
-              .emit("request-car", "nguyen dang quang request grab");
-            io.of("/admin").on("connect", socket => {
-              socket
-                .to(rows[0].socketid)
-                .emit("request-car", "nguyen dang quang request grab");
-              //socket.emit("server-send-book-grap", { data: rows });
-            });
+
+            var dataSend = {
+              driver: curdata,
+              customer: data.idcustomer,
+              customername: data.idName,
+              postionCustomer: data.postionCustomer
+            };
+            var curSocket = rows[0].socketid;
+            console.log(rows[0].socketid);
+            toClient = io.of("/driver");
+            toClient.emit("request-car", dataSend);
+
+            // io.of("/admin").on("connect", socket => {
+            //   socket
+            //     .to(rows[0].socketid)
+            //     .emit("request-car", "nguyen dang quang request grab");
+            //   //socket.emit("server-send-book-grap", { data: rows });
+            // });
           })
           .catch(err => {
             console.log(err);

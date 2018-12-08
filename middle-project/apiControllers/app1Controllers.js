@@ -14,23 +14,6 @@ var config = {
 };
 var hmAPI = new HereMapsAPI(config);
 
-// geocode API
-
-// hmAPI.geocode(geocodeParams, function(err, result) {
-//   console.log(result);
-// });
-
-// // matrix routing API
-// var matrixRoutingParams = {
-//   start0: "25.6586716,-100.3583278",
-//   destination0: "25.6522234,-100.2942806",
-//   mode: "fastest;car;traffic:enabled;" // this mode is set by default
-// };
-
-// hmAPI.matrixRouting(matrixRoutingParams, function(err, result) {
-//   console.log(result);
-// });
-
 router.get("/", (req, res) => {
   customerRepo
     .loadAll()
@@ -78,6 +61,7 @@ router.get("/getdriver/:id", (req, res) => {
     var drivers;
     var customerPosition;
     if (c) {
+      // if has customer
       console.log(c.address); // customer address
       var geocodeParams = {
         searchtext: c.address
@@ -96,7 +80,8 @@ router.get("/getdriver/:id", (req, res) => {
               drivers: drivers,
               customer:
                 result.Response.View[0].Result[0].Location.DisplayPosition,
-              id: c.id
+              id: c.id,
+              cusName: c.name
             });
           })
           .catch(err => {
