@@ -37,13 +37,13 @@ server.on("listening", onListening);
 var io = require("socket.io").listen(server, { log: true });
 
 io.of("/driver").on("connect", socket => {
-  socket.on("driver-connected", function(data) {
+  socket.on("driver-connected", function (data) {
     console.log(socket.id + " driver connected " + data);
     driverRepo.update_socketid(data, socket.id);
   });
 });
 
-io.sockets.on("connection", function(socket) {
+io.sockets.on("connection", function (socket) {
   customerRepo
     .loadAll()
     .then(rows => {
@@ -56,55 +56,67 @@ io.sockets.on("connection", function(socket) {
       res.end("View error log on console");
     });
 
-  socket.on("client-reload-data", function(data) {
+  socket.on("client-reload-data", function (data) {
     console.log("server received client reload data: ", data);
     socket.broadcast.emit("server-send-data", data);
   });
 
+
+
+
   //server received request book bike with infor list driver and id customer
-  socket.on("client-getdriver-data", function(data) {
+  socket.on("client-getdriver-data", function (data) {
     console.log("server received client getdriver data: ", data);
     // xu ly send toi tung diver so luong gioi han la 3 ( test)
     var limit = data.listdriver.length > 3 ? 3 : data.listdriver.length;
-    for (i = 0; i < limit; i++) {
-      console.log("driver " + i + " " + data.listdriver[i].status); // status of driver
-      if (data.listdriver[i].status === statusdriver.available) {
-        // if driver is available
-        var curdata = data.listdriver[i];
-        driverRepo
-          .get_socketid(data.listdriver[i].id) // get id socket of driver i
-          .then(rows => {
-            // nếu có địa chỉ socket tức đang online thì gửi request
-            console.log("server got id socket driver: ", rows[0].socketid);
+    console.log("limit: " + limit);
+    if (limit == 0) {
+      socket.broadcast.emit("abc", data);
+    } else {
+      for (i = 0; i < limit; i++) {
+        console.log("driver " + i + " " + data.listdriver[i].status); // status of driver
+        if (data.listdriver[i].status === statusdriver.available) {
+          // if driver is available
+          var curdata = data.listdriver[i];
+          driverRepo
+            .get_socketid(data.listdriver[i].id) // get id socket of driver i
+            .then(rows => {
+              // nếu có địa chỉ socket tức đang online thì gửi request
+              console.log("server got id socket driver: ", rows[0].socketid);
 
-            // gui toi tung tai xe cho den khi nao nhan dk
+              // gui toi tung tai xe cho den khi nao nhan dk
 
-            var dataSend = {
-              driver: curdata,
-              customer: data.idcustomer,
-              customername: data.idName,
-              postionCustomer: data.postionCustomer
-            };
-            var curSocket = rows[0].socketid;
-            console.log(rows[0].socketid);
-            toClient = io.of("/driver");
-            toClient.emit("request-car", dataSend);
+              var dataSend = {
+                driver: curdata,
+                customer: data.idcustomer,
+                customername: data.idName,
+                postionCustomer: data.postionCustomer
+              };
+              var curSocket = rows[0].socketid;
+              console.log(rows[0].socketid);
+              toClient = io.of("/driver");
+              toClient.emit("request-car", dataSend);
 
-            // io.of("/admin").on("connect", socket => {
-            //   socket
-            //     .to(rows[0].socketid)
-            //     .emit("request-car", "nguyen dang quang request grab");
-            //   //socket.emit("server-send-book-grap", { data: rows });
-            // });
-          })
-          .catch(err => {
-            console.log(err);
-          });
+
+              socket.broadcast.emit("server-send-data", data);
+
+
+              // io.of("/admin").on("connect", socket => {
+              //   socket
+              //     .to(rows[0].socketid)
+              //     .emit("request-car", "nguyen dang quang request grab");
+              //   //socket.emit("server-send-book-grap", { data: rows });
+              // });
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
       }
     }
   });
 
-  socket.on("client-send-data", function(data) {
+  socket.on("client-send-data", function (data) {
     console.log("server received: ", JSON.stringify(data), " from ", socket.id);
   });
 
@@ -115,7 +127,7 @@ io.sockets.on("connection", function(socket) {
    });*/
 
   // This handles when a user is disconnected
-  socket.on("disconnect", function(o) {
+  socket.on("disconnect", function (o) {
     // find the user in the array
     // var index = users.indexOf(socket.id);
     // if (index != -1) {

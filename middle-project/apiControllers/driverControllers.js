@@ -25,7 +25,7 @@ router.get("/", sessionChecker, (req, res) => {
 });
 
 // Register
-router.get("/register", sessionChecker, function(req, res, next) {
+router.get("/register", sessionChecker, function (req, res, next) {
   res.render("driverregister", {
     title: "Driver register form"
   });
@@ -144,6 +144,7 @@ router.get("/status", (req, res) => {
 });
 
 router.put("/status", (req, res) => {
+  console.log('update driver status: ' + req.session.user);
   driverRepo
     .update_status(req.session.user, req.body.status)
     .then(rows => {

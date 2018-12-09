@@ -29,6 +29,11 @@
         console.log("reload data received from server: ", data);
     });
 
+    socket.on('abc', function (data) {
+        console.log("============================================================");
+        alert("Không có tài xế cho khách hàng: " + data.idName);
+    });
+
 
 </script>
 <!-- Navigation -->

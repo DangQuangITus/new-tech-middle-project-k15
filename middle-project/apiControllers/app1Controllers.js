@@ -59,7 +59,7 @@ router.get("/getdriver/:id", (req, res) => {
   customerRepo.single(id).then(c => {
     // get customer by id
     var drivers;
-    var customerPosition;
+    //var customerPosition;
     if (c) {
       // if has customer
       console.log(c.address); // customer address
@@ -67,7 +67,7 @@ router.get("/getdriver/:id", (req, res) => {
         searchtext: c.address
       };
 
-      hmAPI.geocode(geocodeParams, function(err, result) {
+      hmAPI.geocode(geocodeParams, function (err, result) {
         console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
 
         driverRepo
@@ -75,7 +75,7 @@ router.get("/getdriver/:id", (req, res) => {
           .then(rows => {
             drivers = rows;
             console.log("driver load: ", drivers);
-            console.log("customer: ", customerPosition);
+            //console.log("customer: ", customerPosition);
             res.json({
               drivers: drivers,
               customer:
