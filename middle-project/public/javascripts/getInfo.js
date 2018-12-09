@@ -310,6 +310,11 @@ function defaultClick(id) {
     timeout: 10000,
     success: function(json) {
       console.log(json.searchtext);
+      $("#google-map-api-driver").empty();
+
+      $("#google-map-api-driver").hide();
+
+      $("#google-map-api").show();
       $("#google-map-api").empty();
       $("#panel").empty();
       geocodemap(json.searchtext, id);
@@ -319,6 +324,12 @@ function defaultClick(id) {
       alert("error");
     }
   });
+}
+
+var toAdmin = io("http://localhost:3000/admin");
+
+function getMapToCustomer(id) {
+  toAdmin.emit("get-map-to-customer", id);
 }
 
 function requestDriver(id) {

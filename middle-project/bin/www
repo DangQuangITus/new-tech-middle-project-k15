@@ -36,14 +36,42 @@ server.on("listening", onListening);
  */
 var io = require("socket.io").listen(server, { log: true });
 
+var res_req = null;
+var mapData = [];
 io.of("/driver").on("connect", socket => {
-  socket.on("driver-connected", function (data) {
-    console.log(socket.id + " driver connected " + data);
-    driverRepo.update_socketid(data, socket.id);
+  socket.on("driver-connected", function(iddriver) {
+    console.log(socket.id + " driver connected " + iddriver);
+    driverRepo.update_socketid(iddriver, socket.id);
+    driverRepo.update_status(iddriver, statusdriver.available);
+  });
+
+  socket.on("response-driver", function(data) {
+    console.log("data: ", data);
+    if (data === "cancel") {
+      res_req = false;
+    } else if (data.mess === "ok") {
+      mapData.push(data.data);
+      console.log("map data: ", mapData);
+      res_req = true;
+    }
   });
 });
 
-io.sockets.on("connection", function (socket) {
+io.of("/admin").on("connect", socket => {
+  socket.on("get-map-to-customer", function(idcustomer) {
+    console.log("get map for customer: ", idcustomer);
+    if (mapData.length > 0) {
+      mapData.forEach((element, index) => {
+        // console.log(element);
+        if (idcustomer == element.customer) {
+          socket.broadcast.emit("server-send-map-to-driver", element);
+        }
+      });
+    }
+  });
+});
+
+io.sockets.on("connection", function(socket) {
   customerRepo
     .loadAll()
     .then(rows => {
@@ -56,16 +84,13 @@ io.sockets.on("connection", function (socket) {
       res.end("View error log on console");
     });
 
-  socket.on("client-reload-data", function (data) {
+  socket.on("client-reload-data", function(data) {
     console.log("server received client reload data: ", data);
     socket.broadcast.emit("server-send-data", data);
   });
 
-
-
-
   //server received request book bike with infor list driver and id customer
-  socket.on("client-getdriver-data", function (data) {
+  socket.on("client-getdriver-data", function(data) {
     console.log("server received client getdriver data: ", data);
     // xu ly send toi tung diver so luong gioi han la 3 ( test)
     var limit = data.listdriver.length > 3 ? 3 : data.listdriver.length;
@@ -97,26 +122,49 @@ io.sockets.on("connection", function (socket) {
               toClient = io.of("/driver");
               toClient.emit("request-car", dataSend);
 
+              var seconds = 11;
+              var x = setInterval(function() {
+                seconds = seconds - 1;
+                console.log(seconds);
+                if (res_req == false) {
+                  console.log("driver cancel");
+                  res_req = null;
+                  clearInterval(x);
+                  // continue;
+                } else if (res_req == true) {
+                  console.log("gotten driver");
+                  customerRepo
+                    .loadAll()
+                    .then(rows => {
+                      socket.broadcast.emit("server-send-data", { data: rows });
+                      return rows;
+                    })
+                    .catch(err => {
+                      console.log(err);
+                      res.statusCode = 500;
+                      res.end("View error log on console");
+                    });
 
-              //socket.broadcast.emit("server-send-data", data);
-
-
-              // io.of("/admin").on("connect", socket => {
-              //   socket
-              //     .to(rows[0].socketid)
-              //     .emit("request-car", "nguyen dang quang request grab");
-              //   //socket.emit("server-send-book-grap", { data: rows });
-              // });
+                  clearInterval(x);
+                }
+                if (seconds == 0) {
+                  clearInterval(x);
+                }
+              }, 1000);
             })
             .catch(err => {
               console.log(err);
             });
         }
+        if (res_req == true) {
+          res_req = null;
+          break;
+        }
       }
     }
   });
 
-  socket.on("client-send-data", function (data) {
+  socket.on("client-send-data", function(data) {
     console.log("server received: ", JSON.stringify(data), " from ", socket.id);
   });
 
@@ -127,7 +175,17 @@ io.sockets.on("connection", function (socket) {
    });*/
 
   // This handles when a user is disconnected
-  socket.on("disconnect", function (o) {
+  socket.on("disconnect", function(o) {
+    driverRepo
+      .getbysocketId(socket.id)
+      .then(rows => {
+        if (rows.length > 0) {
+          driverRepo.update_status(rows[0].id, statusdriver.disable);
+        }
+      })
+      .catch(err => {
+        alert(err);
+      });
     // find the user in the array
     // var index = users.indexOf(socket.id);
     // if (index != -1) {

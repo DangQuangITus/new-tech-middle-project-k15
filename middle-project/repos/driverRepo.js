@@ -18,6 +18,11 @@ exports.loadAllAvaiable = () => {
   return db.load(sql);
 };
 
+exports.getbysocketId = (socketId) => {
+  var sql = "select * from driver where socketid like '%" + socketId + "'";
+  return db.load(sql);
+};
+
 exports.changeDriverStatus = (status, username) => {
   var sql =
     "update driver set status = '" +
