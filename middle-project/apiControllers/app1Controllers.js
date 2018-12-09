@@ -53,6 +53,75 @@ router.get("/useraddress/:id", (req, res) => {
   });
 });
 
+//cap nhat tt cho khach hang
+router.get("/useraddress3/:id", (req, res) => {
+  console.log("req la: ", req.params);
+  var id = req.params.id;
+
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    var status = "3";
+    customerRepo
+      .updateStatus(status, c.id)
+      .then(value => {
+        console.log("update status have driver");
+        var address = c.address;
+        res.json({
+          searchtext: address
+        });
+      })
+      .catch(err => {
+        res.end("fail");
+      });
+  });
+});
+
+//cap nhat tt cho khach hang
+router.get("/useraddress4/:id", (req, res) => {
+  console.log("req la: ", req.params);
+  var id = req.params.id;
+
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    var status = "4";
+    customerRepo
+      .updateStatus(status, c.id)
+      .then(value => {
+        console.log("update status moving");
+        var address = c.address;
+        res.json({
+          searchtext: address
+        });
+      })
+      .catch(err => {
+        res.end("fail");
+      });
+  });
+});
+
+//cap nhat tt cho khach hang
+router.get("/useraddress5/:id", (req, res) => {
+  console.log("req la: ", req.params);
+  var id = req.params.id;
+
+  customerRepo.single(id).then(c => {
+    //console.log(c);
+    var status = "5";
+    customerRepo
+      .updateStatus(status, c.id)
+      .then(value => {
+        console.log("update status complete");
+        var address = c.address;
+        res.json({
+          searchtext: address
+        });
+      })
+      .catch(err => {
+        res.end("fail");
+      });
+  });
+});
+
 router.get("/getdriver/:id", (req, res) => {
   // console.log("req la: ", req.params);
   var id = req.params.id;

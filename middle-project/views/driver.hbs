@@ -72,6 +72,7 @@
           clearInterval(x);
           document.getElementById("demo").innerHTML = "Hết thời gian, bạn đã từ chối nhận chuyến!";
           $(".loader").hide();
+          updateDriverStatus('busy');
         }
       }, 1000);
 
