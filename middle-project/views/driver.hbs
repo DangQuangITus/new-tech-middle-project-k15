@@ -73,7 +73,7 @@
           clearInterval(x);
           document.getElementById("demo").innerHTML = "Hết thời gian, bạn đã từ chối nhận chuyến!";
           $(".loader").hide();
-          //updateDriverStatus('busy');
+          updateDriverStatus('busy');
         }
       }, 1000);
 
@@ -84,7 +84,7 @@
         $("#expand-customer").text("");
         $("#driver-alert").hide();
 
-        //updateDriverStatus('busy');
+        updateDriverStatus('busy');
       }
       // when click cancel
       function updateDriverStatus(status) {

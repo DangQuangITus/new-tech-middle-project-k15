@@ -225,6 +225,7 @@ function updateDriverStatus(status) {
     timeout: 10000,
     success: function (data) {
       console.log(data);
+      alert(data.msg);
     },
     error: function (data) {
       alert("Ajax update status failed");
