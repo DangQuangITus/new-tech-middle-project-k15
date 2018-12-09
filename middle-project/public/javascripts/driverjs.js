@@ -248,18 +248,60 @@ function onchangeStatusCheckbox(sender) {
 }
 
 function startDrive(sender) {
+
   if (sender.checked) {
     status = "Begin";
     // $("#driverStart").text("Begin");
     // $("#driverStart").show();
     updateDriverStatus('busy');
 
+    //cap nhat vao db stt moving
+    var element = document.getElementById("idcustomer");
+    if (element != null) {
+      var x = document.getElementById("idcustomer").value;
+      if (x != 0) {
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: "http://localhost:3000/apicaller/useraddress4/" + x,
+          // cache: false,
+          timeout: 10000,
+          success: function (json) {
+
+          },
+          error: function (data) {
+            alert("error");
+          }
+        });
+      }
+    }
+
   } else {
     status = "End";
     updateDriverStatus('available');
+    //cap nhat vao db stt complete
+    var element = document.getElementById("idcustomer");
+    if (element != null) {
+      var x = document.getElementById("idcustomer").value;
+      if (x != 0) {
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: "http://localhost:3000/apicaller/useraddress5/" + x,
+          // cache: false,
+          timeout: 10000,
+          success: function (json) {
 
+          },
+          error: function (data) {
+            alert("error");
+          }
+        });
+      }
+    }
   }
-  $("#driverStatus2").text(status);
+  //$("#driverStatus2").text(status);
+  document.getElementById("driverStatus2").innerHTML = status;
 }
 
 // function startDrive() {

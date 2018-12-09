@@ -56,7 +56,8 @@
       var html = "<p>Tên khách hàng:" + data.customername
         + "</p> <p>Khoảng cách đến khách hàng: "
         + distance + "km</p><br/><button type='button' class='btn btn-success' id='ok' >Đồng ý</button> &#160;<button type='button' class='btn btn-success' id='cancel'>Hủy</button><br/><br/>"
-        + "<div class='row'><div class='col-xs-5 col-sm-5 col-md-5 col-lg-5'><h3 id='demo' style='red'></h3></div><div class='col-xs-7 col-sm-7 col-md-7 col-lg-7'><div class='loader' id='loader'></div></div></div>";
+        + "<div class='row'><div class='col-xs-5 col-sm-5 col-md-5 col-lg-5'><h3 id='demo' style='red'></h3></div><div class='col-xs-7 col-sm-7 col-md-7 col-lg-7'><div class='loader' id='loader'></div></div></div>"
+        + '<input type="hidden" id="idcustomer" name="idcustomer" value="0">';
 
 
       $("#expand-customer").append(html);
@@ -72,16 +73,18 @@
           clearInterval(x);
           document.getElementById("demo").innerHTML = "Hết thời gian, bạn đã từ chối nhận chuyến!";
           $(".loader").hide();
-          updateDriverStatus('busy');
+          //updateDriverStatus('busy');
         }
       }, 1000);
 
       document.getElementById("ok").onclick = function () { showMap() };
       document.getElementById("cancel").onclick = function () { hideInfo() };
       function hideInfo() {
+        clearInterval(x);
         $("#expand-customer").text("");
         $("#driver-alert").hide();
-        updateDriverStatus('busy');
+
+        //updateDriverStatus('busy');
       }
       // when click cancel
       function updateDriverStatus(status) {
@@ -114,6 +117,22 @@
 
         $("#demo").hide();
         $(".loader").hide();
+
+        document.getElementById("idcustomer").value = data.customer;
+        //cap nhat vao db stt have driver
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: "http://localhost:3000/apicaller/useraddress3/" + data.customer,
+          // cache: false,
+          timeout: 10000,
+          success: function (json) {
+
+          },
+          error: function (data) {
+            alert("error");
+          }
+        });
 
         function calculateRouteFromAtoB(platform) {
           var router = platform.getRoutingService(),
@@ -465,7 +484,7 @@
   <div class="col-sm-2 col-md-2">
     {{!-- <button id="driverStart" type="button" onclick="startDrive()" class="btn btn-primary" style="display: none; margin-top: 60px;"></button>
     --}}
-    <h3 id="driverStatus2">Begin</h3>
+    <h3 id="driverStatus2">End</h3>
     <label class="switch">
       <input type="checkbox" name="startDrive" onchange="startDrive(this)" />
       <span class="slider round"></span>

@@ -98,7 +98,7 @@ io.sockets.on("connection", function (socket) {
               toClient.emit("request-car", dataSend);
 
 
-              socket.broadcast.emit("server-send-data", data);
+              //socket.broadcast.emit("server-send-data", data);
 
 
               // io.of("/admin").on("connect", socket => {
