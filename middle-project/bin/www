@@ -135,7 +135,10 @@ io.sockets.on("connection", function(socket) {
                 console.log(rows);
                 if (rows.length > 0) {
                   var a = rows[0];
-                  console.log("number driver available now: ", a.cnt);
+                  console.log("number driver available now: ", a.cnt); 
+                }else{
+                   console.log(" k co tai xe!");
+                  socket.broadcast.emit("cancel", { dataSend });
                 }
                 if (a.cnt == 0) {
                   console.log(" k co tai xe!");
