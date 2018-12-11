@@ -55,6 +55,20 @@ io.of("/driver").on("connect", socket => {
       res_req = true;
     }
   });
+  socket.on("update-customer-table", data => {
+    console.log("update customer table");
+    customerRepo
+      .loadAll()
+      .then(rows => {
+        socket.broadcast.emit("server-send-data", { data: rows });
+        return rows;
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+      });
+  });
 });
 
 io.of("/admin").on("connect", socket => {
@@ -68,6 +82,21 @@ io.of("/admin").on("connect", socket => {
         }
       });
     }
+  });
+  
+  socket.on("update-customer-table", data => {
+    console.log("update customer table");
+    customerRepo
+      .loadAll()
+      .then(rows => {
+        socket.broadcast.emit("server-send-data", { data: rows });
+        return rows;
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end("View error log on console");
+      });
   });
 });
 
@@ -128,6 +157,22 @@ io.sockets.on("connection", function(socket) {
                 console.log(seconds);
                 if (res_req == false) {
                   console.log("driver cancel");
+                  driverRepo
+                    .loadCountAvaiable()
+                    .then(rows => {
+                      console.log("======= number driver available =======");
+                      console.log(rows);
+                      var a = rows[0];
+                      console.log(a.cnt);
+                      if (a.cnt == 0) {
+                        console.log(" k co tai xe!");
+                        socket.broadcast.emit("cancel", { dataSend });
+                      }
+                    })
+                    .catch(err => {
+                      res.end("fail");
+                    });
+                  //                  socket.broadcast.emit("cancel", { data: "cancel" });
                   res_req = null;
                   clearInterval(x);
                   // continue;

@@ -1,4 +1,4 @@
-$("#driver_register").click(function () {
+$("#driver_register").click(function() {
   var phone = $("#driver_phone").val();
 
   if (isNaN(phone)) {
@@ -15,7 +15,7 @@ $("#driver_register").click(function () {
   }
 });
 
-$("#add_admin").click(function () {
+$("#add_admin").click(function() {
   var phone = $("#admin_phone").val();
 
   if (isNaN(phone)) {
@@ -68,7 +68,7 @@ function showMap(lat, lng) {
   // Create the default UI components
   var ui = H.ui.UI.createDefault(map, defaultLayers);
 
-  map.addEventListener("tap", function (evt) {
+  map.addEventListener("tap", function(evt) {
     getLocation();
     console.log("Location: ", current_location);
 
@@ -90,7 +90,7 @@ function showMap(lat, lng) {
   return map;
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
   map = showMap(10.832142, 106.645863);
 
   if (navigator.geolocation) {
@@ -118,7 +118,7 @@ $(document).ready(function () {
   console.log("Status", status);
 });
 
-$("#updateDriverLocation").click(function () {
+$("#updateDriverLocation").click(function() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
   }
@@ -154,9 +154,9 @@ function haversineDistance(coords1, coords2) {
   var a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(coords1.lat)) *
-    Math.cos(toRad(coords2.lat)) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
+      Math.cos(toRad(coords2.lat)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var dis = R * c;
 
@@ -170,10 +170,10 @@ function getLocation() {
     contentType: "application/json",
     url: "http://localhost:3000/driver/location",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       current_location = data.coord;
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax get location failed");
     }
   });
@@ -188,10 +188,10 @@ function updateLocation(location) {
     contentType: "application/json",
     url: "http://localhost:3000/driver/location",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       console.log(data);
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax update location failed");
     }
   });
@@ -204,10 +204,10 @@ function getStatus() {
     contentType: "application/json",
     url: "http://localhost:3000/driver/status",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       return data.status;
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax get status failed");
     }
   });
@@ -223,11 +223,11 @@ function updateDriverStatus(status) {
     contentType: "application/json",
     url: "http://localhost:3000/driver/status",
     timeout: 10000,
-    success: function (data) {
+    success: function(data) {
       console.log(data);
       alert(data.msg);
     },
-    error: function (data) {
+    error: function(data) {
       alert("Ajax update status failed");
     }
   });
@@ -238,8 +238,7 @@ function onchangeStatusCheckbox(sender) {
     status = "Ready";
     // $("#driverStart").text("Begin");
     // $("#driverStart").show();
-    updateDriverStatus('available');
-
+    updateDriverStatus("available");
   } else {
     status = "Disable";
     // $("#driverStart").hide();
@@ -249,12 +248,13 @@ function onchangeStatusCheckbox(sender) {
 }
 
 function startDrive(sender) {
+  var socket = io("http://localhost:3000/driver");
 
   if (sender.checked) {
     status = "Begin";
     // $("#driverStart").text("Begin");
     // $("#driverStart").show();
-    updateDriverStatus('busy');
+    updateDriverStatus("busy");
 
     //cap nhat vao db stt moving
     var element = document.getElementById("idcustomer");
@@ -267,19 +267,19 @@ function startDrive(sender) {
           url: "http://localhost:3000/apicaller/useraddress4/" + x,
           // cache: false,
           timeout: 10000,
-          success: function (json) {
-
+          success: function(json) {
+            console.log("update moving thanh cong");
+            socket.emit("update-customer-table", "");
           },
-          error: function (data) {
+          error: function(data) {
             alert("error");
           }
         });
       }
     }
-
   } else {
     status = "End";
-    updateDriverStatus('available');
+    updateDriverStatus("available");
     //cap nhat vao db stt complete
     var element = document.getElementById("idcustomer");
     if (element != null) {
@@ -291,10 +291,11 @@ function startDrive(sender) {
           url: "http://localhost:3000/apicaller/useraddress5/" + x,
           // cache: false,
           timeout: 10000,
-          success: function (json) {
-
+          success: function(json) {
+            console.log("update complete thanh cong");
+            socket.emit("update-customer-table", "");
           },
-          error: function (data) {
+          error: function(data) {
             alert("error");
           }
         });

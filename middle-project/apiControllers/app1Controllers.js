@@ -36,20 +36,38 @@ router.get("/useraddress/:id", (req, res) => {
   var id = req.params.id;
 
   customerRepo.single(id).then(c => {
-    //console.log(c);
-    var status = "2";
-    customerRepo
-      .updateStatus(status, c.id)
-      .then(value => {
-        console.log("update status located");
-        var address = c.address;
-        res.json({
-          searchtext: address
+    console.log("status c: ", c.status);
+    if (c.status == 1) {
+      var status = "2";
+      customerRepo
+        .updateStatus(status, c.id)
+        .then(value => {
+          console.log("update status located");
+          var address = c.address;
+          res.json({
+            searchtext: address,
+            doReload: true
+          });
+        })
+        .catch(err => {
+          res.end("fail");
         });
-      })
-      .catch(err => {
-        res.end("fail");
-      });
+    } else {
+      var status = "2";
+      customerRepo
+        .updateStatus(status, c.id)
+        .then(value => {
+          console.log("update status located");
+          var address = c.address;
+          res.json({
+            searchtext: address,
+            doReload: false
+          });
+        })
+        .catch(err => {
+          res.end("fail");
+        });
+    }
   });
 });
 
@@ -136,7 +154,7 @@ router.get("/getdriver/:id", (req, res) => {
         searchtext: c.address
       };
 
-      hmAPI.geocode(geocodeParams, function (err, result) {
+      hmAPI.geocode(geocodeParams, function(err, result) {
         console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
 
         driverRepo

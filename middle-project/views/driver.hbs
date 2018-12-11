@@ -85,8 +85,9 @@
         $("#driver-alert").hide();
 
         //var cancel = io();
+        updateDriverStatus('busy');
+
         driver.emit("response-driver", "cancel")
-        //updateDriverStatus('busy');
       }
 
       // when click cancel
@@ -108,6 +109,8 @@
       }
 
       function showMap() {
+        updateDriverStatus("busy");
+
         var send_data = {
           mess: "ok",
           data: data

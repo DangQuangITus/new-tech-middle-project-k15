@@ -25,14 +25,20 @@
         $('#list').append(html);
     });
 
-    socket.on('server-send-reload-data', function (data) {
+    /*socket.on('server-send-reload-data', function (data) {
         console.log("========================");
         console.log("reload data received from server: ", data);
-    });
+    });*/
 
     socket.on('abc', function (data) {
         console.log("============================================================");
         alert("Không có tài xế cho khách hàng: " + data.idName);
+    });
+
+    socket.on('cancel', function (data) {
+        console.log("============================================================");
+        alert("Không có tài xế cho khách hàng: " + data.dataSend.customername);
+        console.log(data);// data.customername
     });
 
     var mapDriver = io("http://localhost:3000/admin")
@@ -285,7 +291,44 @@
 
 
     });
+    
+    mapDriver.on('server-send-data', function (data) {
+        console.log("client received: ", data);
+        value = data.data;
+        $('#list').empty();
+        var html = []
+        for (var key in value) {
+            html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
+                + '<td>' + value[key].notes + '</td>'
+                + '<td>' + value[key].status1 + '</td>'
+                + '<td>' + value[key].date + '</td>'
+                + '<td class="td-actions text-center">'
+                + ' <button value="' + value[key].id + '" onClick="defaultClick(' + value[key].id + ')"  type="button" class="btn btn-success btn-round getdemo"> Xem'
+                + '</button ></td ><td><button value="' + value[key].id + '" onClick="requestDriver(' + value[key].id + ')"  type="button" class="btn btn-danger btn-round getdemo"> Đặt xe'
+                + '</button ></td ><td><button value="' + value[key].id + '" onClick="getMapToCustomer(' + value[key].id + ')"  type="button" class="btn btn-danger btn-round getdemo"> Xem bản đồ'
+                + '</button ></td >';
+        }
+        $('#list').append(html);
+    });
 
+    io("http://localhost:3000/driver").on('server-send-data', function (data) {
+        console.log("client received: ", data);
+        value = data.data;
+        $('#list').empty();
+        var html = []
+        for (var key in value) {
+            html += '<tr><td class="text-center">' + value[key].id + '</td><td>' + value[key].name + '</td><td>' + value[key].address + '</td><td>' + value[key].phone + '</td>'
+                + '<td>' + value[key].notes + '</td>'
+                + '<td>' + value[key].status1 + '</td>'
+                + '<td>' + value[key].date + '</td>'
+                + '<td class="td-actions text-center">'
+                + ' <button value="' + value[key].id + '" onClick="defaultClick(' + value[key].id + ')"  type="button" class="btn btn-success btn-round getdemo"> Xem'
+                + '</button ></td ><td><button value="' + value[key].id + '" onClick="requestDriver(' + value[key].id + ')"  type="button" class="btn btn-danger btn-round getdemo"> Đặt xe'
+                + '</button ></td ><td><button value="' + value[key].id + '" onClick="getMapToCustomer(' + value[key].id + ')"  type="button" class="btn btn-danger btn-round getdemo"> Xem bản đồ'
+                + '</button ></td >';
+        }
+        $('#list').append(html);
+    });
 </script>
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-default fixed-top" id="mainNav">

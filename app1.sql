@@ -63,7 +63,7 @@ CREATE TABLE `customer` (
   `reversegeocoding` varchar(200) COLLATE utf8_swedish_ci DEFAULT NULL,
   `createddate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,7 +72,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'phuong','Ha Noi','0123456789','123/8 Le hong phong','2',NULL,NULL),(2,'quang','Ho chi minh','0123456789','Le hong phong','located',NULL,NULL),(10,'nguyen Dang quang','144 Âu cơ, tân bình, Hồ chí minh','0396424817','','located',NULL,NULL),(11,'','','','','located',NULL,'2018-11-10 00:00:00');
+INSERT INTO `customer` VALUES (12,'1512432','48/35 Nguyễn Biểu, quận 5, Hồ chí minh','1234567876','','5',NULL,'2018-12-02 13:43:53'),(13,'nguyen dang quang','182 Lê Đại hành, Tân bình Tp Hồ Chí Minh','0396424917','','3','Phường 15, Quận 11, Thành Phố Hồ Chí Minh, Việt Nam','2018-12-02 14:17:22');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +94,7 @@ CREATE TABLE `driver` (
   `status` varchar(45) NOT NULL,
   `socketid` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,7 +103,7 @@ CREATE TABLE `driver` (
 
 LOCK TABLES `driver` WRITE;
 /*!40000 ALTER TABLE `driver` DISABLE KEYS */;
-INSERT INTO `driver` VALUES (14,'quangnd2','96e79218965eb72c92a549dd5a330112','quang','nguyen dang ',396424818,'{\"lat\":10.7548208,\"lng\":106.6851614}','disable',NULL);
+INSERT INTO `driver` VALUES (14,'quangnd2','96e79218965eb72c92a549dd5a330112','quang','nguyen dang ',396424818,'{\"lat\":10.7548172,\"lng\":106.68516690000001}','available','/driver#pW6y0Ah26zmQKGYpAAAC'),(15,'duyphuong','827ccb0eea8a706c4c34a16891f84e7b','Phuong','Tran Duy',1115454,'{\"lat\":10.7548316,\"lng\":106.684738}','disable','/driver#AkUQPpxSL4Kf3PB8AAAK');
 /*!40000 ALTER TABLE `driver` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,4 +124,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-18 23:20:09
+-- Dump completed on 2018-12-11 15:56:11

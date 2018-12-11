@@ -310,6 +310,9 @@ function defaultClick(id) {
     timeout: 10000,
     success: function(json) {
       console.log(json.searchtext);
+      if (json.doReload) {
+        toAdmin.emit("update-customer-table", "");
+      }
       $("#google-map-api-driver").empty();
 
       $("#google-map-api-driver").hide();

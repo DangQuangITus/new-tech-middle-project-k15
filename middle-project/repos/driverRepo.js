@@ -7,14 +7,18 @@ exports.add = data => {
 
   var query = `insert into driver(username, password, first_name, last_name, phone, status) values('${
     data.driver_username
-  }', '${md5_pwd}', '${data.driver_first_name}', '${data.driver_last_name}', '${
+    }', '${md5_pwd}', '${data.driver_first_name}', '${data.driver_last_name}', '${
     data.driver_phone
-  }', '${status.disable}');`;
+    }', '${status.disable}');`;
   return db.save(query);
 };
 
 exports.loadAllAvaiable = () => {
   var sql = "select * from driver where status = '" + status.available + "'";
+  return db.load(sql);
+};
+exports.loadCountAvaiable = () => {
+  var sql = "select count(*) as cnt from driver where status = '" + status.available + "'";
   return db.load(sql);
 };
 
@@ -36,7 +40,7 @@ exports.login = data => {
   var md5_pwd = md5(data.driver_password);
   var sql = `select * from driver where username = '${
     data.driver_username
-  }' and password = '${md5_pwd}'`;
+    }' and password = '${md5_pwd}'`;
   return db.load(sql);
 };
 
