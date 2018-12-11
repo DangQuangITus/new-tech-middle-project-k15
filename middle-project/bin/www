@@ -83,7 +83,7 @@ io.of("/admin").on("connect", socket => {
       });
     }
   });
-  
+
   socket.on("update-customer-table", data => {
     console.log("update customer table");
     customerRepo
@@ -101,6 +101,79 @@ io.of("/admin").on("connect", socket => {
 });
 
 io.sockets.on("connection", function(socket) {
+  var sendRequest = (curdata, data) => {
+    driverRepo
+      .get_socketid(curdata.id) // get id socket of driver i
+      .then(rows => {
+        // nếu có địa chỉ socket tức đang online thì gửi request
+        console.log("server got id socket driver: ", rows[0].socketid);
+
+        // gui toi tung tai xe cho den khi nao nhan dk
+
+        var dataSend = {
+          driver: curdata,
+          // driverid: driverid,
+          customer: data.idcustomer,
+          customername: data.idName,
+          postionCustomer: data.postionCustomer
+        };
+        // var curSocket = rows[0].socketid;
+        // console.log(rows[0].socketid);
+        toClient = io.of("/driver");
+        toClient.emit("request-car", dataSend);
+
+        var seconds = 11;
+        var x = setInterval(function() {
+          seconds = seconds - 1;
+          console.log(seconds);
+          if (res_req == false) {
+            console.log("driver cancel");
+            driverRepo
+              .loadCountAvaiable()
+              .then(rows => {
+                console.log("======= number driver available =======");
+                console.log(rows);
+                if (rows.length > 0) {
+                  var a = rows[0];
+                  console.log("number driver available now: ", a.cnt);
+                }
+                if (a.cnt == 0) {
+                  console.log(" k co tai xe!");
+                  socket.broadcast.emit("cancel", { dataSend });
+                }
+              })
+              .catch(err => {
+                res.end("fail");
+              });
+            res_req = null;
+            clearInterval(x);
+            // continue;
+          } else if (res_req == true) {
+            console.log("gotten driver");
+            customerRepo
+              .loadAll()
+              .then(rows => {
+                socket.broadcast.emit("server-send-data", { data: rows });
+                return rows;
+              })
+              .catch(err => {
+                console.log(err);
+                res.statusCode = 500;
+                res.end("View error log on console");
+              });
+
+            clearInterval(x);
+          }
+          if (seconds == 0) {
+            clearInterval(x);
+          }
+        }, 1000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   customerRepo
     .loadAll()
     .then(rows => {
@@ -128,78 +201,9 @@ io.sockets.on("connection", function(socket) {
       socket.broadcast.emit("abc", data);
     } else {
       for (i = 0; i < limit; i++) {
-        console.log("driver " + i + " " + data.listdriver[i].status); // status of driver
         if (data.listdriver[i].status === statusdriver.available) {
-          // if driver is available
-          var curdata = data.listdriver[i];
-          driverRepo
-            .get_socketid(data.listdriver[i].id) // get id socket of driver i
-            .then(rows => {
-              // nếu có địa chỉ socket tức đang online thì gửi request
-              console.log("server got id socket driver: ", rows[0].socketid);
-
-              // gui toi tung tai xe cho den khi nao nhan dk
-
-              var dataSend = {
-                driver: curdata,
-                customer: data.idcustomer,
-                customername: data.idName,
-                postionCustomer: data.postionCustomer
-              };
-              var curSocket = rows[0].socketid;
-              console.log(rows[0].socketid);
-              toClient = io.of("/driver");
-              toClient.emit("request-car", dataSend);
-
-              var seconds = 11;
-              var x = setInterval(function() {
-                seconds = seconds - 1;
-                console.log(seconds);
-                if (res_req == false) {
-                  console.log("driver cancel");
-                  driverRepo
-                    .loadCountAvaiable()
-                    .then(rows => {
-                      console.log("======= number driver available =======");
-                      console.log(rows);
-                      var a = rows[0];
-                      console.log(a.cnt);
-                      if (a.cnt == 0) {
-                        console.log(" k co tai xe!");
-                        socket.broadcast.emit("cancel", { dataSend });
-                      }
-                    })
-                    .catch(err => {
-                      res.end("fail");
-                    });
-                  //                  socket.broadcast.emit("cancel", { data: "cancel" });
-                  res_req = null;
-                  clearInterval(x);
-                  // continue;
-                } else if (res_req == true) {
-                  console.log("gotten driver");
-                  customerRepo
-                    .loadAll()
-                    .then(rows => {
-                      socket.broadcast.emit("server-send-data", { data: rows });
-                      return rows;
-                    })
-                    .catch(err => {
-                      console.log(err);
-                      res.statusCode = 500;
-                      res.end("View error log on console");
-                    });
-
-                  clearInterval(x);
-                }
-                if (seconds == 0) {
-                  clearInterval(x);
-                }
-              }, 1000);
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          console.log("driver " + i + " " + data.listdriver[i].id); // status of driver
+          sendRequest(data.listdriver[i], data);
         }
         if (res_req == true) {
           res_req = null;
@@ -212,12 +216,6 @@ io.sockets.on("connection", function(socket) {
   socket.on("client-send-data", function(data) {
     console.log("server received: ", JSON.stringify(data), " from ", socket.id);
   });
-
-  /*// This is a listener to the signal "something"
-   stream.on("start stream", function (data) {
-   console.log("Test: ", data);
-   socket.emit('info', { data: data });
-   });*/
 
   // This handles when a user is disconnected
   socket.on("disconnect", function(o) {
